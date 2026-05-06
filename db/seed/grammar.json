@@ -1,0 +1,102 @@
+[
+  {
+    "id": "gram-L1-tense-001",
+    "strand": "grammar",
+    "level": 1,
+    "subskill": "verb-tense",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "She ___ to school every day.",
+      "options": [
+        { "id": "a", "text": "go" },
+        { "id": "b", "text": "goes" },
+        { "id": "c", "text": "going" },
+        { "id": "d", "text": "gone" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L2-article-001",
+    "strand": "grammar",
+    "level": 2,
+    "subskill": "articles",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "I saw ___ interesting movie last night.",
+      "options": [
+        { "id": "a", "text": "a" },
+        { "id": "b", "text": "an" },
+        { "id": "c", "text": "the" },
+        { "id": "d", "text": "—" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L3-passive-001",
+    "strand": "grammar",
+    "level": 3,
+    "subskill": "passive-voice",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 50,
+    "payload": {
+      "stem": "The report ___ by the manager yesterday.",
+      "options": [
+        { "id": "a", "text": "wrote" },
+        { "id": "b", "text": "has written" },
+        { "id": "c", "text": "was written" },
+        { "id": "d", "text": "is writing" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L4-conditional-001",
+    "strand": "grammar",
+    "level": 4,
+    "subskill": "conditionals",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 55,
+    "payload": {
+      "stem": "If she ___ harder, she would have passed the exam.",
+      "options": [
+        { "id": "a", "text": "studied" },
+        { "id": "b", "text": "had studied" },
+        { "id": "c", "text": "would study" },
+        { "id": "d", "text": "studies" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L5-cohesion-001",
+    "strand": "grammar",
+    "level": 5,
+    "subskill": "cohesive-devices",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "stem": "The study produced promising results; ___, further research is needed before any conclusions can be drawn.",
+      "options": [
+        { "id": "a", "text": "therefore" },
+        { "id": "b", "text": "nevertheless" },
+        { "id": "c", "text": "moreover" },
+        { "id": "d", "text": "similarly" }
+      ],
+      "correctOptionId": "b"
+    }
+  }
+]

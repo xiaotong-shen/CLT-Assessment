@@ -1,0 +1,37 @@
+[
+  {
+    "id": "write-prompt-L1-001",
+    "level": 1,
+    "promptTextEn": "Write 3 sentences about your family. Who are they? Where do they live?",
+    "promptTextZh": "用3句话介绍你的家人。他们是谁？他们住在哪里？",
+    "status": "live"
+  },
+  {
+    "id": "write-prompt-L2-001",
+    "level": 2,
+    "promptTextEn": "Describe your school or your home. Write at least 4 sentences.",
+    "promptTextZh": "描述你的学校或家。请至少写4句话。",
+    "status": "live"
+  },
+  {
+    "id": "write-prompt-L3-001",
+    "level": 3,
+    "promptTextEn": "Write a short paragraph (5–8 sentences) describing a typical day in your life. Include what you do in the morning, afternoon, and evening.",
+    "promptTextZh": "写一段话（5至8句），描述你典型的一天。包括早上、下午和晚上你做什么。",
+    "status": "live"
+  },
+  {
+    "id": "write-prompt-L4-001",
+    "level": 4,
+    "promptTextEn": "Write a paragraph (8–12 sentences) about a challenge you have faced and how you dealt with it. Include details about what happened, how you felt, and what you learned.",
+    "promptTextZh": "写一段话（8至12句），描述你曾经面临的一个挑战以及你是如何应对的。包括事情经过、你的感受以及你的收获。",
+    "status": "live"
+  },
+  {
+    "id": "write-prompt-L5-001",
+    "level": 5,
+    "promptTextEn": "Write a short essay (3 paragraphs) arguing whether technology has made modern life better or worse. Support your position with specific examples and evidence.",
+    "promptTextZh": "写一篇短文（3段），论述技术是否让现代生活变得更好或更差。用具体例子和证据支持你的观点。",
+    "status": "live"
+  }
+]

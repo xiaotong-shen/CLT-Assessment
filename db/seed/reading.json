@@ -1,0 +1,212 @@
+[
+  {
+    "id": "read-L1-signs-001",
+    "strand": "reading",
+    "level": 1,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 45,
+    "payload": {
+      "passage": "DO NOT ENTER",
+      "stem": "Where would you see this sign?",
+      "options": [
+        { "id": "a", "text": "on a door" },
+        { "id": "b", "text": "on a box" },
+        { "id": "c", "text": "on a letter" },
+        { "id": "d", "text": "on a table" }
+      ],
+      "correctOptionId": "a"
+    }
+  },
+  {
+    "id": "read-L1-signs-002",
+    "strand": "reading",
+    "level": 1,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 45,
+    "payload": {
+      "passage": "WET FLOOR",
+      "stem": "What does this sign mean?",
+      "options": [
+        { "id": "a", "text": "The floor is clean." },
+        { "id": "b", "text": "Be careful — the floor is wet." },
+        { "id": "c", "text": "The floor is new." },
+        { "id": "d", "text": "Do not walk here." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L2-note-001",
+    "strand": "reading",
+    "level": 2,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "passage": "Tim,\nI have gone to the store. Your lunch is on the table. Don't forget to feed the cat.\nCarol",
+      "stem": "What is Carol doing?",
+      "options": [
+        { "id": "a", "text": "feeding the cat" },
+        { "id": "b", "text": "making lunch" },
+        { "id": "c", "text": "shopping at a store" },
+        { "id": "d", "text": "fixing the table" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L2-note-002",
+    "strand": "reading",
+    "level": 2,
+    "subskill": "vocabulary-in-context",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "passage": "Tim,\nI have gone to the store. Your lunch is on the table. Don't forget to feed the cat.\nCarol",
+      "stem": "What must Tim do?",
+      "options": [
+        { "id": "a", "text": "Go to the store." },
+        { "id": "b", "text": "Make his lunch." },
+        { "id": "c", "text": "Feed the cat." },
+        { "id": "d", "text": "Write a note." }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L3-ad-001",
+    "strand": "reading",
+    "level": 3,
+    "subskill": "purpose-of-text",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 75,
+    "payload": {
+      "passage": "BIG Shoe Sale!\nSaturday, March 8 — 10 am to 3 pm\nAll prices reduced!\nBuy any pair and get a second pair at half price.\nWhile quantities last — Hurry in!\n(No Credit — Cash only)",
+      "stem": "What type of text is this?",
+      "options": [
+        { "id": "a", "text": "a warning" },
+        { "id": "b", "text": "an advertisement" },
+        { "id": "c", "text": "a receipt" },
+        { "id": "d", "text": "an instruction" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L3-ad-002",
+    "strand": "reading",
+    "level": 3,
+    "subskill": "main-idea",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 75,
+    "payload": {
+      "passage": "BIG Shoe Sale!\nSaturday, March 8 — 10 am to 3 pm\nAll prices reduced!\nBuy any pair and get a second pair at half price.\nWhile quantities last — Hurry in!\n(No Credit — Cash only)",
+      "stem": "The message says there are",
+      "options": [
+        { "id": "a", "text": "large quantities." },
+        { "id": "b", "text": "low prices." },
+        { "id": "c", "text": "big sizes." },
+        { "id": "d", "text": "credit offers." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L4-letter-001",
+    "strand": "reading",
+    "level": 4,
+    "subskill": "main-idea",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 90,
+    "payload": {
+      "passage": "Message to visitors:\n\nWhen you visit our park, please think about the animals still living in the wild. They need to search for natural foods such as seeds and nuts. Even the smallest piece of bread or snack food can disrupt their diet and health. Tractors and donors should not feed. Feeding not only disrupts the health of our ecosystem but it can also affect the balance in our population. Please use the bins provided and do not leave food on the ground.\n\nThank you for keeping our park clean and helping us protect the natural balance.",
+      "stem": "What is the main purpose of this message?",
+      "options": [
+        { "id": "a", "text": "to advertise" },
+        { "id": "b", "text": "to educate" },
+        { "id": "c", "text": "to entertain" },
+        { "id": "d", "text": "to amuse" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L4-letter-002",
+    "strand": "reading",
+    "level": 4,
+    "subskill": "inference",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 90,
+    "payload": {
+      "passage": "Message to visitors:\n\nWhen you visit our park, please think about the animals still living in the wild. They need to search for natural foods such as seeds and nuts. Even the smallest piece of bread or snack food can disrupt their diet and health. Tractors and donors should not feed. Feeding not only disrupts the health of our ecosystem but it can also affect the balance in our population. Please use the bins provided and do not leave food on the ground.\n\nThank you for keeping our park clean and helping us protect the natural balance.",
+      "stem": "What mistakes do some people make?",
+      "options": [
+        { "id": "a", "text": "They sit in the park." },
+        { "id": "b", "text": "They give food to birds." },
+        { "id": "c", "text": "They tame the pigeons." },
+        { "id": "d", "text": "They cut the grass." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L5-academic-001",
+    "strand": "reading",
+    "level": 5,
+    "subskill": "inference",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 120,
+    "payload": {
+      "passage": "\"Studies show...\" — how often we hear that phrase, followed by a statement presented as fact. But what does it really mean? It seems that technology can both raise and destroy reputations. More and more, we find that technology has overpowered common sense. Platforms and restaurant experiments really easily are reviewed, and we question what has long been established anecdotes.\n\nIn this week's episode of Science Today, we will investigate the role technology plays in our day-to-day decisions. Can technology always determine the best way to act? Don't miss Paige to tell us his findings from several notable studies. Guest speakers on both sides of the issue will share their own vision and tenacity.",
+      "stem": "What is the best meaning of the first sentence?",
+      "options": [
+        { "id": "a", "text": "Studies prove how to live better." },
+        { "id": "b", "text": "Science has an effect on behaviour." },
+        { "id": "c", "text": "Research is limited and inconclusive." },
+        { "id": "d", "text": "Technology leads to better outcomes." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L5-academic-002",
+    "strand": "reading",
+    "level": 5,
+    "subskill": "vocabulary-in-context",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 120,
+    "payload": {
+      "passage": "\"Studies show...\" — how often we hear that phrase, followed by a statement presented as fact. But what does it really mean? It seems that technology can both raise and destroy reputations. More and more, we find that technology has overpowered common sense. Platforms and restaurant experiments really easily are reviewed, and we question what has long been established anecdotes.\n\nIn this week's episode of Science Today, we will investigate the role technology plays in our day-to-day decisions. Can technology always determine the best way to act? Don't miss Paige to tell us his findings from several notable studies. Guest speakers on both sides of the issue will share their own vision and tenacity.",
+      "stem": "What are the main criticisms of experiments?",
+      "options": [
+        { "id": "a", "text": "They are flawed." },
+        { "id": "b", "text": "They are inconclusive." },
+        { "id": "c", "text": "They are anecdotes." },
+        { "id": "d", "text": "They are unnecessary." }
+      ],
+      "correctOptionId": "b"
+    }
+  }
+]

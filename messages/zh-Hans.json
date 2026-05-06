@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "title": "英语水平测评",
+    "description": "安大略省中学ESL/ELD分级测评"
+  },
+  "intake": {
+    "title": "学生信息",
+    "subtitle": "请在开始测评前回答以下问题。",
+    "q": {
+      "name": { "label": "姓名" },
+      "dob": { "label": "出生日期" },
+      "l1": {
+        "label": "您的母语是什么？",
+        "placeholder": "例如：普通话、粤语、阿拉伯语"
+      },
+      "schoolingYears": {
+        "label": "您一共完成了几年的学校教育（包括任何国家）？",
+        "hint": "从一年级开始计算"
+      },
+      "l1LiteracySelfRating": {
+        "label": "您的母语读写能力如何？",
+        "options": {
+          "1": "我无法用母语读写",
+          "2": "我能读写简短的简单文字",
+          "3": "我能读写日常文字",
+          "4": "我能读写大多数文字",
+          "5": "我能流利地用母语读写"
+        }
+      }
+    },
+    "submit": "开始测评",
+    "privacy": "您的信息将被安全存储，仅用于分级目的。"
+  },
+  "test": {
+    "timer": "剩余时间",
+    "remaining": "本节还剩 {count} 道题",
+    "continue": "继续",
+    "replay": "重播音频",
+    "replaysLeft": "还可重播 {count} 次",
+    "writing": {
+      "placeholder": "请在此处写下您的回答……",
+      "wordCount": "{count} 个词"
+    }
+  },
+  "report": {
+    "title": "分级结果",
+    "recommendation": "推荐课程",
+    "stepProfile": "STEP 分级档案",
+    "strand": {
+      "reading": "阅读",
+      "listening": "听力",
+      "grammar": "语法与词汇",
+      "writing": "写作",
+      "speaking": "口语"
+    },
+    "speakingNote": "本次测评未包含口语测试。",
+    "nextSteps": "建议练习方向",
+    "courses": {
+      "ESLAO": {
+        "name": "ESL 一级（ESLAO）",
+        "description": "培养基础英语日常交流能力。学生将学习简单句型，阅读短篇改编文章，书写短语和简单句子。"
+      },
+      "ESLBO": {
+        "name": "ESL 二级（ESLBO）",
+        "description": "提升听说读写能力。学生阅读改编文章，扩展语法知识，撰写完整段落。"
+      },
+      "ESLCO": {
+        "name": "ESL 三级（ESLCO）",
+        "description": "培养多种日常及学术用途的技能。学生进行短篇口头报告，阅读改编及原版文章，并运用不同文体写作。"
+      },
+      "ESLDO": {
+        "name": "ESL 四级（ESLDO）",
+        "description": "为学生流利使用英语进行学习和社交做准备。学生撰写文章和摘要，并对文本和媒体进行批判性回应。"
+      },
+      "ESLEO": {
+        "name": "ESL 五级（ESLEO）",
+        "description": "支持学生过渡到大学预科课程。学生撰写论文，主持研讨会，运用独立研究策略。"
+      },
+      "ELDAO": {
+        "name": "ELD 一级（ELDAO）",
+        "description": "适合受教育机会有限的学生，侧重基础识字能力及英语日常沟通。"
+      },
+      "ELDBO": {
+        "name": "ELD 二级（ELDBO）",
+        "description": "发展阅读策略、简单写作及词汇扩展，熟悉学校日常规律。"
+      },
+      "ELDCO": {
+        "name": "ELD 三级（ELDCO）",
+        "description": "通过有支持的阅读写作任务、短篇口头报告及合作学习活动提升识字能力。"
+      },
+      "ELDDO": {
+        "name": "ELD 四级（ELDDO）",
+        "description": "扩展识字技能和批判性思维，进行有指导的阅读写作，并运用社区资源。"
+      },
+      "ELDEO": {
+        "name": "ELD 五级（ELDEO）",
+        "description": "为学生就业路径做准备。学生跨话题沟通，解读和创作媒体文本，培养自主学习技能。"
+      },
+      "Mainstream": {
+        "name": "主流英语课程",
+        "description": "评估结果显示，学生英语水平足以在无需ESL/ELD支持的情况下参加主流学术课程。"
+      }
+    }
+  },
+  "staff": {
+    "queue": {
+      "title": "审核队列",
+      "empty": "暂无待审核的测评。",
+      "flagged": "已标记",
+      "unflagged": "全部",
+      "columns": {
+        "student": "学生",
+        "completed": "完成时间",
+        "recommendation": "推荐课程",
+        "flags": "标记",
+        "action": ""
+      },
+      "review": "审核"
+    },
+    "attempt": {
+      "reasoning": "引擎推理过程",
+      "flags": "标记",
+      "override": "覆盖推荐结果",
+      "overrideReason": "覆盖原因",
+      "overrideSubmit": "保存覆盖",
+      "downloadPdf": "下载PDF",
+      "downloadAudit": "下载审计JSON"
+    }
+  },
+  "common": {
+    "loading": "加载中……",
+    "error": "出现错误，请重试。",
+    "back": "返回",
+    "save": "保存",
+    "cancel": "取消"
+  }
+}

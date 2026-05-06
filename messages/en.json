@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "title": "ESL Placement Assessment",
+    "description": "Ontario ESL/ELD level placement for secondary school students"
+  },
+  "intake": {
+    "title": "Student Information",
+    "subtitle": "Please answer the following questions before starting the assessment.",
+    "q": {
+      "name": { "label": "Full name" },
+      "dob": { "label": "Date of birth" },
+      "l1": {
+        "label": "What is your first language (mother tongue)?",
+        "placeholder": "e.g. Mandarin, Cantonese, Arabic"
+      },
+      "schoolingYears": {
+        "label": "How many years of school have you completed (in any country)?",
+        "hint": "Count from Grade 1 onward"
+      },
+      "l1LiteracySelfRating": {
+        "label": "How well can you read and write in your first language?",
+        "options": {
+          "1": "I cannot read or write in my first language",
+          "2": "I can read and write short simple texts",
+          "3": "I can read and write everyday texts",
+          "4": "I can read and write most texts",
+          "5": "I read and write fluently in my first language"
+        }
+      }
+    },
+    "submit": "Start Assessment",
+    "privacy": "Your information is stored securely and used only for placement purposes."
+  },
+  "test": {
+    "timer": "Time remaining",
+    "remaining": "{count} questions remaining in this section",
+    "continue": "Continue",
+    "replay": "Replay audio",
+    "replaysLeft": "{count} replay(s) remaining",
+    "writing": {
+      "placeholder": "Write your response here...",
+      "wordCount": "{count} words"
+    }
+  },
+  "report": {
+    "title": "Placement Result",
+    "recommendation": "Recommended course",
+    "stepProfile": "STEP profile",
+    "strand": {
+      "reading": "Reading",
+      "listening": "Listening",
+      "grammar": "Grammar & Vocabulary",
+      "writing": "Writing",
+      "speaking": "Speaking"
+    },
+    "speakingNote": "Speaking was not assessed in this session.",
+    "nextSteps": "Suggested focus areas",
+    "courses": {
+      "ESLAO": {
+        "name": "ESL Level 1 (ESLAO)",
+        "description": "Introduces basic English skills for everyday communication. Students will learn simple sentence patterns, read short adapted texts, and write phrases and short sentences."
+      },
+      "ESLBO": {
+        "name": "ESL Level 2 (ESLBO)",
+        "description": "Extends listening, speaking, reading, and writing skills. Students read adapted texts, expand grammar knowledge, and write connected paragraphs."
+      },
+      "ESLCO": {
+        "name": "ESL Level 3 (ESLCO)",
+        "description": "Builds skills for a variety of everyday and academic purposes. Students give short presentations, read adapted and original texts, and write using different text forms."
+      },
+      "ESLDO": {
+        "name": "ESL Level 4 (ESLDO)",
+        "description": "Prepares students for fluent use of English in school and social settings. Students write articles and summaries, and respond critically to texts and media."
+      },
+      "ESLEO": {
+        "name": "ESL Level 5 (ESLEO)",
+        "description": "Supports the transition to college and university preparation courses. Students write essays, lead workshops, and apply independent research strategies."
+      },
+      "ELDAO": {
+        "name": "ELD Level 1 (ELDAO)",
+        "description": "For students with limited prior schooling. Focuses on foundational literacy and basic English communication for everyday purposes."
+      },
+      "ELDBO": {
+        "name": "ELD Level 2 (ELDBO)",
+        "description": "Develops reading strategies, simple writing, and expanding vocabulary, with growing familiarity with school routines."
+      },
+      "ELDCO": {
+        "name": "ELD Level 3 (ELDCO)",
+        "description": "Builds literacy through supported reading and writing tasks, short oral presentations, and cooperative learning activities."
+      },
+      "ELDDO": {
+        "name": "ELD Level 4 (ELDDO)",
+        "description": "Extends literacy skills and critical thinking, with guided reading, writing, and use of community resources."
+      },
+      "ELDEO": {
+        "name": "ELD Level 5 (ELDEO)",
+        "description": "Prepares students for employment pathways. Students communicate across topics, interpret and create media texts, and develop independent learning skills."
+      },
+      "Mainstream": {
+        "name": "Mainstream English",
+        "description": "Assessment indicates English skills sufficient for mainstream academic courses without ESL/ELD support."
+      }
+    }
+  },
+  "staff": {
+    "queue": {
+      "title": "Review Queue",
+      "empty": "No attempts pending review.",
+      "flagged": "Flagged",
+      "unflagged": "All",
+      "columns": {
+        "student": "Student",
+        "completed": "Completed",
+        "recommendation": "Recommendation",
+        "flags": "Flags",
+        "action": ""
+      },
+      "review": "Review"
+    },
+    "attempt": {
+      "reasoning": "Engine reasoning trace",
+      "flags": "Flags",
+      "override": "Override recommendation",
+      "overrideReason": "Reason for override",
+      "overrideSubmit": "Save override",
+      "downloadPdf": "Download PDF",
+      "downloadAudit": "Download audit JSON"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again.",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}
