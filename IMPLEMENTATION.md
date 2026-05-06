@@ -675,10 +675,14 @@ functional. shadcn/ui table + form is plenty.
 
 ## Epic E5 — Test-taking flow
 
-### T-040: Intake survey
+### T-040: Intake survey ✅
 
 **Goal:** Bilingual form collecting `IntakeAnswers` (DESIGN §3.1). Saves
 to `attempts.intake_answers_jsonb` and starts an attempt.
+
+**Status:** Done. `src/app/[locale]/(student)/intake/page.tsx` — 5-question
+form (name, DOB, L1, schooling years, L1 literacy rating). Submits to
+`POST /api/attempts`, navigates to `/attempt/[id]`.
 
 **Effort:** M
 **Depends on:** T-020, T-010, T-004
@@ -696,7 +700,7 @@ to `attempts.intake_answers_jsonb` and starts an attempt.
 
 ---
 
-### T-041: Attempt lifecycle API
+### T-041: Attempt lifecycle API ✅
 
 **Goal:** Three endpoints that drive the whole test:
 1. `POST /api/attempts/:id/next` — engine returns a `NextItemDecision` or
@@ -733,16 +737,28 @@ to `attempts.intake_answers_jsonb` and starts an attempt.
 - [ ] `next` after `complete` returns 409
 - [ ] Attempt resumes correctly if browser closes mid-test
 
+**Status:** Done. `src/server/attempts.ts` implements full lifecycle:
+`createAttempt`, `buildAttemptState` (stateless replay), `getNextItem`
+(ClientItemSchema strips answer keys), `recordResponse` (idempotent),
+`getAuditJson`. API routes: `POST /api/attempts`, `GET …/next`,
+`POST …/respond`, `GET …/audit.json`. Auto-completes attempt when engine
+returns `done`. Audit endpoint gated to specialist/admin roles.
+
 **Pitfalls:** Never include the answer key in the `next` response payload.
 The MC payload sent to the client has `options` only — `correctOptionId`
 is server-side.
 
 ---
 
-### T-042: Item renderer components
+### T-042: Item renderer components ✅
 
 **Goal:** Five components rendering the four MVP item formats, all
 keyboard-accessible and tested.
+
+**Status:** Done. `src/components/items/`: McSingle, McMulti, Cloze,
+ListeningMc, Writing. All use field names matching ItemSchema (passage/stem,
+not stimulus/question). Writing enforces minWords client-side. Payload types
+match ClientItemSchema exactly.
 
 **Effort:** M
 **Depends on:** T-041
