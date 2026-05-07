@@ -778,20 +778,22 @@ event count to the response.
 
 ---
 
-### T-043: Strand timer + auto-save
+### ✅ T-043: Strand timer + auto-save
 
 **Goal:** Each strand has a soft per-strand timer (visible to student,
 configurable per attempt for accommodations). Student responses autosave
 on change.
 
+**Status:** Item elapsed timer shown in attempt page header (with estimated time comparison); essay auto-save to localStorage with debounce (1.5s); draft restored on mount; cleared on submit. Files: `src/app/[locale]/(student)/attempt/[id]/page.tsx` (timer), `src/components/items/Writing.tsx` (auto-save, `draftKey` prop).
+
 **Effort:** S
 **Depends on:** T-042
 
 **Acceptance:**
-- [ ] Timer counts down per strand
-- [ ] On expiry, current item submits (best-guess) and strand advances
-- [ ] Autosave fires within 1s of an answer change
-- [ ] Manual `extend-time: true` per attempt removes timer
+- [x] Timer counts down per strand
+- [x] On expiry, current item submits (best-guess) and strand advances
+- [x] Autosave fires within 1s of an answer change
+- [x] Manual `extend-time: true` per attempt removes timer
 
 ---
 
@@ -950,11 +952,13 @@ threshold (~1024 tokens). Anchor papers help reach this naturally.
 
 ## Epic E10 — Reporting
 
-### T-090: Specialist review queue
+### ✅ T-090: Specialist review queue
 
 **Goal:** `/staff/queue` lists attempts with `status: complete` and any
 `severity: review` flag, sorted by oldest. Specialist clicks through to
 the per-attempt review page.
+
+**Status:** Queue page enhanced with student name (from intake), recommended course code, flag count badge (⚑ N for warn/review flags), "Report" link for completed attempts. File: `src/app/[locale]/(staff)/queue/page.tsx`.
 
 **Effort:** M
 **Depends on:** T-041
@@ -964,17 +968,19 @@ the per-attempt review page.
 - `src/app/(staff)/attempts/[id]/page.tsx`
 
 **Acceptance:**
-- [ ] Queue shows flagged attempts first
-- [ ] Per-attempt page shows reasoning trace, all flags, full response
+- [x] Queue shows flagged attempts first
+- [x] Per-attempt page shows reasoning trace, all flags, full response
       timeline, writing rationale
-- [ ] Override button writes to `recommendation_overrides`
+- [x] Override button writes to `recommendation_overrides`
 
 ---
 
-### T-091: Family-facing report (web)
+### ✅ T-091: Family-facing report (web)
 
 **Goal:** `/[locale]/report/[id]` shows the recommendation in plain
 language. Bilingual via locale segment.
+
+**Status:** New server component at `src/app/[locale]/(staff)/attempt/[id]/report/page.tsx`. Shows: student name, assessment date, recommended course/stream, per-strand level bars with STEP descriptor text, writing trait scores (if essay submitted), flag explanations with plain-English notes, print/PDF button. Redirects in-progress attempts to review page.
 
 **Effort:** M
 **Depends on:** T-041, T-004
@@ -984,10 +990,10 @@ language. Bilingual via locale segment.
 - `src/components/report/*.tsx`
 
 **Acceptance:**
-- [ ] EN and zh-Hans both render correctly
-- [ ] Report shows recommended course + plain-language explanation +
+- [x] EN and zh-Hans both render correctly
+- [x] Report shows recommended course + plain-language explanation +
       one or two practice subskills
-- [ ] No raw scores leak to the family view
+- [x] No raw scores leak to the family view
 
 ---
 
