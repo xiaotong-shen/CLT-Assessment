@@ -20,6 +20,106 @@
     }
   },
   {
+    "id": "gram-L1-tense-002",
+    "strand": "grammar",
+    "level": 1,
+    "subskill": "verb-tense",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "They ___ soccer on Saturday.",
+      "options": [
+        { "id": "a", "text": "plays" },
+        { "id": "b", "text": "playing" },
+        { "id": "c", "text": "play" },
+        { "id": "d", "text": "played" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L1-pronouns-001",
+    "strand": "grammar",
+    "level": 1,
+    "subskill": "pronouns",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "My brother is tall. ___ plays basketball.",
+      "options": [
+        { "id": "a", "text": "She" },
+        { "id": "b", "text": "They" },
+        { "id": "c", "text": "He" },
+        { "id": "d", "text": "It" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L1-pronouns-002",
+    "strand": "grammar",
+    "level": 1,
+    "subskill": "pronouns",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "The cat is on the mat. ___ is sleeping.",
+      "options": [
+        { "id": "a", "text": "He" },
+        { "id": "b", "text": "It" },
+        { "id": "c", "text": "She" },
+        { "id": "d", "text": "They" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L1-prepositions-001",
+    "strand": "grammar",
+    "level": 1,
+    "subskill": "prepositions",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "The book is ___ the table.",
+      "options": [
+        { "id": "a", "text": "in" },
+        { "id": "b", "text": "on" },
+        { "id": "c", "text": "at" },
+        { "id": "d", "text": "by" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L1-prepositions-002",
+    "strand": "grammar",
+    "level": 1,
+    "subskill": "prepositions",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "I wake up ___ 7 o'clock every morning.",
+      "options": [
+        { "id": "a", "text": "on" },
+        { "id": "b", "text": "in" },
+        { "id": "c", "text": "at" },
+        { "id": "d", "text": "by" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
     "id": "gram-L2-article-001",
     "strand": "grammar",
     "level": 2,
@@ -40,6 +140,106 @@
     }
   },
   {
+    "id": "gram-L2-article-002",
+    "strand": "grammar",
+    "level": 2,
+    "subskill": "articles",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "Could you close ___ window, please? It's cold.",
+      "options": [
+        { "id": "a", "text": "a" },
+        { "id": "b", "text": "an" },
+        { "id": "c", "text": "the" },
+        { "id": "d", "text": "—" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L2-past-tense-001",
+    "strand": "grammar",
+    "level": 2,
+    "subskill": "verb-tense",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "Yesterday, we ___ a great time at the party.",
+      "options": [
+        { "id": "a", "text": "have" },
+        { "id": "b", "text": "has" },
+        { "id": "c", "text": "had" },
+        { "id": "d", "text": "having" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L2-past-tense-002",
+    "strand": "grammar",
+    "level": 2,
+    "subskill": "verb-tense",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "She ___ her homework before dinner last night.",
+      "options": [
+        { "id": "a", "text": "finishes" },
+        { "id": "b", "text": "finish" },
+        { "id": "c", "text": "is finishing" },
+        { "id": "d", "text": "finished" }
+      ],
+      "correctOptionId": "d"
+    }
+  },
+  {
+    "id": "gram-L2-comparison-001",
+    "strand": "grammar",
+    "level": 2,
+    "subskill": "adjectives",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "This exercise is ___ than the last one.",
+      "options": [
+        { "id": "a", "text": "more hard" },
+        { "id": "b", "text": "harder" },
+        { "id": "c", "text": "hardest" },
+        { "id": "d", "text": "most hard" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L2-comparison-002",
+    "strand": "grammar",
+    "level": 2,
+    "subskill": "adjectives",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 40,
+    "payload": {
+      "stem": "Mount Everest is the ___ mountain in the world.",
+      "options": [
+        { "id": "a", "text": "taller" },
+        { "id": "b", "text": "most tall" },
+        { "id": "c", "text": "tallest" },
+        { "id": "d", "text": "more tall" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
     "id": "gram-L3-passive-001",
     "strand": "grammar",
     "level": 3,
@@ -55,6 +255,106 @@
         { "id": "b", "text": "has written" },
         { "id": "c", "text": "was written" },
         { "id": "d", "text": "is writing" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L3-passive-002",
+    "strand": "grammar",
+    "level": 3,
+    "subskill": "passive-voice",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 50,
+    "payload": {
+      "stem": "English ___ all over the world.",
+      "options": [
+        { "id": "a", "text": "speaks" },
+        { "id": "b", "text": "is spoken" },
+        { "id": "c", "text": "was spoken" },
+        { "id": "d", "text": "speaking" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L3-relative-001",
+    "strand": "grammar",
+    "level": 3,
+    "subskill": "relative-clauses",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 50,
+    "payload": {
+      "stem": "The student ___ won the prize was very happy.",
+      "options": [
+        { "id": "a", "text": "which" },
+        { "id": "b", "text": "what" },
+        { "id": "c", "text": "who" },
+        { "id": "d", "text": "whom" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L3-relative-002",
+    "strand": "grammar",
+    "level": 3,
+    "subskill": "relative-clauses",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 50,
+    "payload": {
+      "stem": "The book ___ I borrowed was really interesting.",
+      "options": [
+        { "id": "a", "text": "who" },
+        { "id": "b", "text": "whose" },
+        { "id": "c", "text": "what" },
+        { "id": "d", "text": "that" }
+      ],
+      "correctOptionId": "d"
+    }
+  },
+  {
+    "id": "gram-L3-present-perfect-001",
+    "strand": "grammar",
+    "level": 3,
+    "subskill": "verb-tense",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 50,
+    "payload": {
+      "stem": "I ___ that film before. It was excellent.",
+      "options": [
+        { "id": "a", "text": "saw" },
+        { "id": "b", "text": "have seen" },
+        { "id": "c", "text": "see" },
+        { "id": "d", "text": "was seeing" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L3-present-perfect-002",
+    "strand": "grammar",
+    "level": 3,
+    "subskill": "verb-tense",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 50,
+    "payload": {
+      "stem": "She ___ in Canada since 2019.",
+      "options": [
+        { "id": "a", "text": "lives" },
+        { "id": "b", "text": "lived" },
+        { "id": "c", "text": "has lived" },
+        { "id": "d", "text": "is living" }
       ],
       "correctOptionId": "c"
     }
@@ -80,6 +380,106 @@
     }
   },
   {
+    "id": "gram-L4-conditional-002",
+    "strand": "grammar",
+    "level": 4,
+    "subskill": "conditionals",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 55,
+    "payload": {
+      "stem": "If I ___ more time, I would travel more often.",
+      "options": [
+        { "id": "a", "text": "have" },
+        { "id": "b", "text": "had" },
+        { "id": "c", "text": "would have" },
+        { "id": "d", "text": "has" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L4-modal-001",
+    "strand": "grammar",
+    "level": 4,
+    "subskill": "modals",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 55,
+    "payload": {
+      "stem": "You ___ have told me you were coming — I would have prepared dinner.",
+      "options": [
+        { "id": "a", "text": "might" },
+        { "id": "b", "text": "could" },
+        { "id": "c", "text": "should" },
+        { "id": "d", "text": "shall" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "gram-L4-modal-002",
+    "strand": "grammar",
+    "level": 4,
+    "subskill": "modals",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 55,
+    "payload": {
+      "stem": "The lights are off. They ___ have left already.",
+      "options": [
+        { "id": "a", "text": "should" },
+        { "id": "b", "text": "must" },
+        { "id": "c", "text": "shall" },
+        { "id": "d", "text": "will" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L4-reported-001",
+    "strand": "grammar",
+    "level": 4,
+    "subskill": "reported-speech",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 55,
+    "payload": {
+      "stem": "He said that he ___ the project the following day.",
+      "options": [
+        { "id": "a", "text": "will finish" },
+        { "id": "b", "text": "would finish" },
+        { "id": "c", "text": "finishes" },
+        { "id": "d", "text": "finished" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L4-reported-002",
+    "strand": "grammar",
+    "level": 4,
+    "subskill": "reported-speech",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 55,
+    "payload": {
+      "stem": "She asked me where ___ from.",
+      "options": [
+        { "id": "a", "text": "I came" },
+        { "id": "b", "text": "did I come" },
+        { "id": "c", "text": "I come" },
+        { "id": "d", "text": "was I coming" }
+      ],
+      "correctOptionId": "a"
+    }
+  },
+  {
     "id": "gram-L5-cohesion-001",
     "strand": "grammar",
     "level": 5,
@@ -97,6 +497,106 @@
         { "id": "d", "text": "similarly" }
       ],
       "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L5-cohesion-002",
+    "strand": "grammar",
+    "level": 5,
+    "subskill": "cohesive-devices",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "stem": "The plan was simple; ___, its implementation proved extremely complex.",
+      "options": [
+        { "id": "a", "text": "additionally" },
+        { "id": "b", "text": "however" },
+        { "id": "c", "text": "therefore" },
+        { "id": "d", "text": "consequently" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L5-subjunctive-001",
+    "strand": "grammar",
+    "level": 5,
+    "subskill": "subjunctive",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "stem": "The committee recommended that the policy ___ revised immediately.",
+      "options": [
+        { "id": "a", "text": "is" },
+        { "id": "b", "text": "be" },
+        { "id": "c", "text": "was" },
+        { "id": "d", "text": "were" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L5-subjunctive-002",
+    "strand": "grammar",
+    "level": 5,
+    "subskill": "subjunctive",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "stem": "It is essential that every student ___ the safety guidelines before entering the lab.",
+      "options": [
+        { "id": "a", "text": "reads" },
+        { "id": "b", "text": "read" },
+        { "id": "c", "text": "has read" },
+        { "id": "d", "text": "is reading" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L5-cleft-001",
+    "strand": "grammar",
+    "level": 5,
+    "subskill": "complex-syntax",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "stem": "It was the ___ that finally convinced the jury.",
+      "options": [
+        { "id": "a", "text": "evidence compelling" },
+        { "id": "b", "text": "compelling evidence" },
+        { "id": "c", "text": "evidence being compelling" },
+        { "id": "d", "text": "evidence, it was compelling" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "gram-L5-cleft-002",
+    "strand": "grammar",
+    "level": 5,
+    "subskill": "complex-syntax",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "stem": "Despite ___ for hours, the rescue team could not find any survivors.",
+      "options": [
+        { "id": "a", "text": "to search" },
+        { "id": "b", "text": "searched" },
+        { "id": "c", "text": "searching" },
+        { "id": "d", "text": "they searched" }
+      ],
+      "correctOptionId": "c"
     }
   }
 ]

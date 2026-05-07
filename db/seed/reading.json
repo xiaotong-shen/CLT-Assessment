@@ -42,6 +42,90 @@
     }
   },
   {
+    "id": "read-L1-signs-003",
+    "strand": "reading",
+    "level": 1,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 45,
+    "payload": {
+      "passage": "OPEN\nMonday – Friday\n9:00 am – 5:00 pm",
+      "stem": "When is the store open?",
+      "options": [
+        { "id": "a", "text": "all day, every day" },
+        { "id": "b", "text": "on weekdays only" },
+        { "id": "c", "text": "on weekends only" },
+        { "id": "d", "text": "in the evening only" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L1-signs-004",
+    "strand": "reading",
+    "level": 1,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 45,
+    "payload": {
+      "passage": "PUSH",
+      "stem": "What should you do with a door that has this sign?",
+      "options": [
+        { "id": "a", "text": "pull it" },
+        { "id": "b", "text": "push it" },
+        { "id": "c", "text": "lock it" },
+        { "id": "d", "text": "knock on it" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L1-menu-001",
+    "strand": "reading",
+    "level": 1,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 45,
+    "payload": {
+      "passage": "Soup ........... $3.00\nSandwich ........ $5.00\nCoffee .......... $2.00\nWater ........... $1.00",
+      "stem": "How much does a sandwich cost?",
+      "options": [
+        { "id": "a", "text": "$2.00" },
+        { "id": "b", "text": "$3.00" },
+        { "id": "c", "text": "$5.00" },
+        { "id": "d", "text": "$1.00" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L1-menu-002",
+    "strand": "reading",
+    "level": 1,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 45,
+    "payload": {
+      "passage": "Bus 23 — Northbound\nLeaves Main St at 8:15 am\nArrives Downtown at 8:45 am",
+      "stem": "What time does the bus arrive downtown?",
+      "options": [
+        { "id": "a", "text": "8:00 am" },
+        { "id": "b", "text": "8:15 am" },
+        { "id": "c", "text": "8:30 am" },
+        { "id": "d", "text": "8:45 am" }
+      ],
+      "correctOptionId": "d"
+    }
+  },
+  {
     "id": "read-L2-note-001",
     "strand": "reading",
     "level": 2,
@@ -79,6 +163,90 @@
         { "id": "b", "text": "Make his lunch." },
         { "id": "c", "text": "Feed the cat." },
         { "id": "d", "text": "Write a note." }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L2-notice-001",
+    "strand": "reading",
+    "level": 2,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "passage": "Dear Students,\nThe library will be closed on Friday, November 10 for repairs. It will reopen on Monday, November 13. Please return any books before Friday. Thank you.",
+      "stem": "Why is the library closing?",
+      "options": [
+        { "id": "a", "text": "It is a holiday." },
+        { "id": "b", "text": "It needs repairs." },
+        { "id": "c", "text": "All books are out." },
+        { "id": "d", "text": "It is moving." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L2-notice-002",
+    "strand": "reading",
+    "level": 2,
+    "subskill": "following-instructions",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "passage": "Dear Students,\nThe library will be closed on Friday, November 10 for repairs. It will reopen on Monday, November 13. Please return any books before Friday. Thank you.",
+      "stem": "What must students do before Friday?",
+      "options": [
+        { "id": "a", "text": "borrow new books" },
+        { "id": "b", "text": "return their books" },
+        { "id": "c", "text": "visit the library" },
+        { "id": "d", "text": "pay a fine" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L2-weather-001",
+    "strand": "reading",
+    "level": 2,
+    "subskill": "literal-comprehension",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "passage": "Today's weather:\nMorning: Cloudy, 8°C\nAfternoon: Sunny, 14°C\nEvening: Rain expected, 10°C\nBring an umbrella!",
+      "stem": "What will the weather be like in the evening?",
+      "options": [
+        { "id": "a", "text": "sunny" },
+        { "id": "b", "text": "cloudy" },
+        { "id": "c", "text": "rainy" },
+        { "id": "d", "text": "windy" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L2-weather-002",
+    "strand": "reading",
+    "level": 2,
+    "subskill": "following-instructions",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 60,
+    "payload": {
+      "passage": "Today's weather:\nMorning: Cloudy, 8°C\nAfternoon: Sunny, 14°C\nEvening: Rain expected, 10°C\nBring an umbrella!",
+      "stem": "What does this text tell you to bring?",
+      "options": [
+        { "id": "a", "text": "a coat" },
+        { "id": "b", "text": "boots" },
+        { "id": "c", "text": "an umbrella" },
+        { "id": "d", "text": "sunglasses" }
       ],
       "correctOptionId": "c"
     }
@@ -126,6 +294,90 @@
     }
   },
   {
+    "id": "read-L3-email-001",
+    "strand": "reading",
+    "level": 3,
+    "subskill": "main-idea",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 75,
+    "payload": {
+      "passage": "From: Park Community Centre\nSubject: New Fitness Classes Start Next Week!\n\nWe are excited to announce new fitness classes for all ages starting Monday. Classes include yoga, swimming, and aerobics. Registration is free for seniors over 65. All other adults pay $15 per month. Visit our website or call 555-0123 to sign up today.",
+      "stem": "What is the main purpose of this email?",
+      "options": [
+        { "id": "a", "text": "to ask for donations" },
+        { "id": "b", "text": "to announce new classes" },
+        { "id": "c", "text": "to advertise the gym" },
+        { "id": "d", "text": "to warn about changes" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L3-email-002",
+    "strand": "reading",
+    "level": 3,
+    "subskill": "inference",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 75,
+    "payload": {
+      "passage": "From: Park Community Centre\nSubject: New Fitness Classes Start Next Week!\n\nWe are excited to announce new fitness classes for all ages starting Monday. Classes include yoga, swimming, and aerobics. Registration is free for seniors over 65. All other adults pay $15 per month. Visit our website or call 555-0123 to sign up today.",
+      "stem": "A 70-year-old woman wants to join yoga. How much will she pay?",
+      "options": [
+        { "id": "a", "text": "$15 per month" },
+        { "id": "b", "text": "$30 per month" },
+        { "id": "c", "text": "nothing — it is free" },
+        { "id": "d", "text": "$65 per month" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L3-recipe-001",
+    "strand": "reading",
+    "level": 3,
+    "subskill": "following-instructions",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 75,
+    "payload": {
+      "passage": "Simple Tomato Soup\n1. Heat oil in a large pot over medium heat.\n2. Add onions and cook for 5 minutes until soft.\n3. Add tomatoes, broth, and salt.\n4. Bring to a boil, then reduce heat and simmer for 20 minutes.\n5. Blend until smooth. Serve hot.",
+      "stem": "What should you do AFTER adding tomatoes and broth?",
+      "options": [
+        { "id": "a", "text": "blend the soup" },
+        { "id": "b", "text": "add the onions" },
+        { "id": "c", "text": "bring to a boil" },
+        { "id": "d", "text": "heat the oil" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L3-recipe-002",
+    "strand": "reading",
+    "level": 3,
+    "subskill": "vocabulary-in-context",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 75,
+    "payload": {
+      "passage": "Simple Tomato Soup\n1. Heat oil in a large pot over medium heat.\n2. Add onions and cook for 5 minutes until soft.\n3. Add tomatoes, broth, and salt.\n4. Bring to a boil, then reduce heat and simmer for 20 minutes.\n5. Blend until smooth. Serve hot.",
+      "stem": "In step 4, what does \"simmer\" most likely mean?",
+      "options": [
+        { "id": "a", "text": "cook at high heat" },
+        { "id": "b", "text": "stir quickly" },
+        { "id": "c", "text": "cook gently at low heat" },
+        { "id": "d", "text": "freeze the soup" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
     "id": "read-L4-letter-001",
     "strand": "reading",
     "level": 4,
@@ -168,6 +420,90 @@
     }
   },
   {
+    "id": "read-L4-article-001",
+    "strand": "reading",
+    "level": 4,
+    "subskill": "main-idea",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 90,
+    "payload": {
+      "passage": "Many schools are reconsidering their homework policies. Research suggests that excessive homework can increase student stress without significantly improving academic achievement. Critics argue that large amounts of homework disadvantage students who lack quiet study spaces or parental support at home. Some educators advocate for quality over quantity — fewer, more meaningful assignments — while others believe that consistent practice at home builds essential study habits for later life.",
+      "stem": "What is the main debate described in this article?",
+      "options": [
+        { "id": "a", "text": "whether schools should be open on weekends" },
+        { "id": "b", "text": "how much homework students should receive" },
+        { "id": "c", "text": "whether parents should help with homework" },
+        { "id": "d", "text": "how schools should measure student stress" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L4-article-002",
+    "strand": "reading",
+    "level": 4,
+    "subskill": "vocabulary-in-context",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 90,
+    "payload": {
+      "passage": "Many schools are reconsidering their homework policies. Research suggests that excessive homework can increase student stress without significantly improving academic achievement. Critics argue that large amounts of homework disadvantage students who lack quiet study spaces or parental support at home. Some educators advocate for quality over quantity — fewer, more meaningful assignments — while others believe that consistent practice at home builds essential study habits for later life.",
+      "stem": "In this passage, \"advocate for quality over quantity\" most likely means",
+      "options": [
+        { "id": "a", "text": "giving students more homework to improve results" },
+        { "id": "b", "text": "choosing better assignments over many assignments" },
+        { "id": "c", "text": "reducing stress through physical exercise" },
+        { "id": "d", "text": "supporting parents in helping their children" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L4-article-003",
+    "strand": "reading",
+    "level": 4,
+    "subskill": "inference",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 90,
+    "payload": {
+      "passage": "Many schools are reconsidering their homework policies. Research suggests that excessive homework can increase student stress without significantly improving academic achievement. Critics argue that large amounts of homework disadvantage students who lack quiet study spaces or parental support at home. Some educators advocate for quality over quantity — fewer, more meaningful assignments — while others believe that consistent practice at home builds essential study habits for later life.",
+      "stem": "Which students are MOST likely to be disadvantaged by heavy homework?",
+      "options": [
+        { "id": "a", "text": "students who enjoy reading" },
+        { "id": "b", "text": "students who attend private schools" },
+        { "id": "c", "text": "students without quiet home environments" },
+        { "id": "d", "text": "students with many siblings" }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L4-article-004",
+    "strand": "reading",
+    "level": 4,
+    "subskill": "purpose-of-text",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 90,
+    "payload": {
+      "passage": "Many schools are reconsidering their homework policies. Research suggests that excessive homework can increase student stress without significantly improving academic achievement. Critics argue that large amounts of homework disadvantage students who lack quiet study spaces or parental support at home. Some educators advocate for quality over quantity — fewer, more meaningful assignments — while others believe that consistent practice at home builds essential study habits for later life.",
+      "stem": "Which group would most likely SUPPORT keeping heavy homework loads?",
+      "options": [
+        { "id": "a", "text": "educators who value consistent home practice" },
+        { "id": "b", "text": "critics who worry about inequality" },
+        { "id": "c", "text": "researchers who found no improvement" },
+        { "id": "d", "text": "students who lack quiet study spaces" }
+      ],
+      "correctOptionId": "a"
+    }
+  },
+  {
     "id": "read-L5-academic-001",
     "strand": "reading",
     "level": 5,
@@ -205,6 +541,90 @@
         { "id": "b", "text": "They are inconclusive." },
         { "id": "c", "text": "They are anecdotes." },
         { "id": "d", "text": "They are unnecessary." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L5-essay-001",
+    "strand": "reading",
+    "level": 5,
+    "subskill": "critical-analysis",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 120,
+    "payload": {
+      "passage": "Urban green spaces — parks, gardens, and tree-lined streets — are increasingly recognized as essential infrastructure rather than optional amenities. Research consistently links access to nature within cities to lower rates of anxiety and depression, improved cognitive function, and stronger community cohesion. Yet many fast-growing cities continue to prioritize commercial development over green space, citing economic pressures and land scarcity. Environmental advocates argue that short-term economic thinking ignores the long-term public health costs of green-space deprivation.",
+      "stem": "Which statement best summarizes the author's viewpoint?",
+      "options": [
+        { "id": "a", "text": "Commercial development should stop immediately in all cities." },
+        { "id": "b", "text": "Green spaces are luxuries that cities cannot always afford." },
+        { "id": "c", "text": "Cutting green spaces may cost more in the long run through health impacts." },
+        { "id": "d", "text": "Anxiety and depression are caused solely by lack of nature." }
+      ],
+      "correctOptionId": "c"
+    }
+  },
+  {
+    "id": "read-L5-essay-002",
+    "strand": "reading",
+    "level": 5,
+    "subskill": "vocabulary-in-context",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 120,
+    "payload": {
+      "passage": "Urban green spaces — parks, gardens, and tree-lined streets — are increasingly recognized as essential infrastructure rather than optional amenities. Research consistently links access to nature within cities to lower rates of anxiety and depression, improved cognitive function, and stronger community cohesion. Yet many fast-growing cities continue to prioritize commercial development over green space, citing economic pressures and land scarcity. Environmental advocates argue that short-term economic thinking ignores the long-term public health costs of green-space deprivation.",
+      "stem": "In this passage, \"community cohesion\" most likely means",
+      "options": [
+        { "id": "a", "text": "local businesses working together" },
+        { "id": "b", "text": "people in a neighbourhood feeling connected" },
+        { "id": "c", "text": "government agencies cooperating" },
+        { "id": "d", "text": "schools sharing resources" }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L5-essay-003",
+    "strand": "reading",
+    "level": 5,
+    "subskill": "critical-analysis",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 120,
+    "payload": {
+      "passage": "Urban green spaces — parks, gardens, and tree-lined streets — are increasingly recognized as essential infrastructure rather than optional amenities. Research consistently links access to nature within cities to lower rates of anxiety and depression, improved cognitive function, and stronger community cohesion. Yet many fast-growing cities continue to prioritize commercial development over green space, citing economic pressures and land scarcity. Environmental advocates argue that short-term economic thinking ignores the long-term public health costs of green-space deprivation.",
+      "stem": "Why do some cities continue to reduce green space despite the research?",
+      "options": [
+        { "id": "a", "text": "They disagree with the research findings." },
+        { "id": "b", "text": "They face economic and land pressures." },
+        { "id": "c", "text": "They prefer to build hospitals instead." },
+        { "id": "d", "text": "Citizens do not want green spaces." }
+      ],
+      "correctOptionId": "b"
+    }
+  },
+  {
+    "id": "read-L5-essay-004",
+    "strand": "reading",
+    "level": 5,
+    "subskill": "inference",
+    "format": "mc-single",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 120,
+    "payload": {
+      "passage": "Urban green spaces — parks, gardens, and tree-lined streets — are increasingly recognized as essential infrastructure rather than optional amenities. Research consistently links access to nature within cities to lower rates of anxiety and depression, improved cognitive function, and stronger community cohesion. Yet many fast-growing cities continue to prioritize commercial development over green space, citing economic pressures and land scarcity. Environmental advocates argue that short-term economic thinking ignores the long-term public health costs of green-space deprivation.",
+      "stem": "What would environmental advocates most likely support?",
+      "options": [
+        { "id": "a", "text": "building more shopping centres" },
+        { "id": "b", "text": "protecting existing parks from development" },
+        { "id": "c", "text": "reducing healthcare costs through new technology" },
+        { "id": "d", "text": "encouraging people to move out of cities" }
       ],
       "correctOptionId": "b"
     }
