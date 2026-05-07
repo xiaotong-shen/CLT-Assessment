@@ -14,6 +14,40 @@ type NextItemResponse =
   | { done: true }
   | { item: ClientItem; stage: Stage; strand: Strand };
 
+// ---------------------------------------------------------------------------
+// Item elapsed-time hook
+// ---------------------------------------------------------------------------
+
+function useElapsedTimer(active: boolean) {
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef(Date.now());
+
+  useEffect(() => {
+    if (!active) {
+      setElapsed(0);
+      return;
+    }
+    startRef.current = Date.now();
+    setElapsed(0);
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [active]);
+
+  return { elapsed, startRef };
+}
+
+function formatTime(secs: number): string {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return m > 0 ? `${m}:${String(s).padStart(2, "0")}` : `${s}s`;
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
 export default function AttemptPage() {
   const { id } = useParams<{ id: string }>();
   const locale = useLocale();
@@ -24,11 +58,17 @@ export default function AttemptPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const itemStartMs = useRef<number>(Date.now());
+  const { elapsed, startRef } = useElapsedTimer(!!current && !loading);
+
+  const estimated = current?.item.estimatedTimeSec ?? null;
+  const overTime = estimated !== null && elapsed > estimated;
 
   const fetchNext = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setCurrent(null);
     try {
       const res = await fetch(`/api/attempts/${id}/next`);
       if (!res.ok) {
@@ -42,13 +82,14 @@ export default function AttemptPage() {
       } else {
         setCurrent(data);
         itemStartMs.current = Date.now();
+        startRef.current = Date.now();
       }
     } catch {
       setError("Network error. Please refresh.");
     } finally {
       setLoading(false);
     }
-  }, [id, locale, router]);
+  }, [id, locale, router, startRef]);
 
   useEffect(() => {
     fetchNext();
@@ -58,6 +99,15 @@ export default function AttemptPage() {
     if (!current || submitting) return;
     setSubmitting(true);
     const timeMs = Date.now() - itemStartMs.current;
+
+    // Clear auto-save draft on submit
+    if (current.item.format === "essay") {
+      try {
+        localStorage.removeItem(`draft_${id}_${current.item.id}`);
+      } catch {
+        // localStorage may be unavailable (private browsing, etc.)
+      }
+    }
 
     try {
       const res = await fetch(`/api/attempts/${id}/respond`, {
@@ -70,11 +120,9 @@ export default function AttemptPage() {
         setSubmitting(false);
         return;
       }
-      setCurrent(null);
       await fetchNext();
     } catch {
       setError("Network error. Please try again.");
-    } finally {
       setSubmitting(false);
     }
   }
@@ -87,15 +135,49 @@ export default function AttemptPage() {
     );
   }
 
+  const isEssay = current?.item.format === "essay";
+
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl">
-        {/* Progress header */}
+        {/* Progress + timer header */}
         {current && (
-          <div className="mb-4 flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wide">
-            <span>{current.strand}</span>
+          <div className="mb-3 flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wide">
+            <span className="capitalize">{current.strand}</span>
             <span>·</span>
             <span>{current.stage}</span>
+            <span>·</span>
+            <span>Level {current.item.level}</span>
+
+            {/* Elapsed timer */}
+            <div className="ml-auto flex items-center gap-1.5">
+              {estimated && (
+                <span className="text-gray-300 normal-case">
+                  est. {formatTime(estimated)}
+                </span>
+              )}
+              <span
+                className={`font-mono tabular-nums ${
+                  overTime ? "text-amber-500 font-semibold" : "text-gray-400"
+                }`}
+              >
+                {formatTime(elapsed)}
+              </span>
+              {overTime && (
+                <span className="text-amber-400" title="Over estimated time">
+                  ⏱
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Grading notice for essay items */}
+        {isEssay && submitting && (
+          <div className="mb-3 text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-center">
+            {locale === "zh-Hans"
+              ? "正在评分您的作文，请稍候…"
+              : "Grading your essay — this may take a moment…"}
           </div>
         )}
 
@@ -122,6 +204,7 @@ export default function AttemptPage() {
           {!loading && !error && current && (
             <ItemRenderer
               item={current.item}
+              attemptId={id}
               onSubmit={handleSubmit}
               disabled={submitting}
               locale={locale}
@@ -133,13 +216,19 @@ export default function AttemptPage() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Item renderer
+// ---------------------------------------------------------------------------
+
 function ItemRenderer({
   item,
+  attemptId,
   onSubmit,
   disabled,
   locale,
 }: {
   item: ClientItem;
+  attemptId: string;
   onSubmit: (r: unknown) => void;
   disabled: boolean;
   locale: string;
@@ -189,11 +278,12 @@ function ItemRenderer({
         onSubmit={onSubmit}
         disabled={disabled}
         locale={locale}
+        draftKey={`draft_${attemptId}_${item.id}`}
       />
     );
   }
 
-  // Exhaustive check — item.format is `never` here if all cases are handled above
+  // Exhaustive fallback — item.format is `never` here if all branches are handled
   const _format: string = (item as { format: string }).format;
   return <p className="text-red-500 text-sm">Unknown item format: {_format}</p>;
 }
