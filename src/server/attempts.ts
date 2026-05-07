@@ -2,7 +2,7 @@ import "server-only";
 import { eq, and, desc } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { db } from "./db";
-import { attempts, attemptItems, items, prompts } from "../../db/schema";
+import { attempts, attemptItems, items, prompts, recommendationOverrides } from "../../db/schema";
 import { gradeEssay } from "./writing-grader";
 import {
   decide,
@@ -368,11 +368,24 @@ export async function getAuditJson(attemptId: string) {
   const attempt = await getAttempt(attemptId);
   if (!attempt) return null;
 
-  const rows = await db
-    .select()
-    .from(attemptItems)
-    .where(eq(attemptItems.attemptId, attemptId))
-    .orderBy(attemptItems.presentedAt);
+  const [rows, overrideRows] = await Promise.all([
+    db
+      .select()
+      .from(attemptItems)
+      .where(eq(attemptItems.attemptId, attemptId))
+      .orderBy(attemptItems.presentedAt),
+    db
+      .select()
+      .from(recommendationOverrides)
+      .where(eq(recommendationOverrides.attemptId, attemptId))
+      .orderBy(desc(recommendationOverrides.createdAt)),
+  ]);
+
+  // Extract writing grading from essay response (if present)
+  const essayRow = rows.find(
+    (r) =>
+      (r.response as Record<string, unknown> | null)?.grading !== undefined
+  );
 
   return {
     attemptId,
@@ -383,6 +396,10 @@ export async function getAuditJson(attemptId: string) {
     status: attempt.status,
     intakeAnswers: attempt.intakeAnswers,
     recommendation: attempt.recommendation,
+    writingGrading: essayRow
+      ? (essayRow.response as Record<string, unknown> | null)?.grading ?? null
+      : null,
+    specialistOverride: overrideRows[0] ?? null,
     items: rows,
   };
 }
