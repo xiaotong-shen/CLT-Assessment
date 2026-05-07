@@ -3,7 +3,8 @@ import { useState } from "react";
 
 type Props = {
   payload: {
-    promptText: string;
+    promptTextEn: string;
+    promptTextZh?: string;
     minWords?: number;
     maxWords?: number;
   };
@@ -22,11 +23,15 @@ export function Writing({ payload, onSubmit, disabled, locale = "en" }: Props) {
   const minWords = payload.minWords ?? 50;
   const maxWords = payload.maxWords;
   const ready = wordCount >= minWords && (!maxWords || wordCount <= maxWords);
+  const promptText =
+    locale === "zh-Hans" && payload.promptTextZh
+      ? payload.promptTextZh
+      : payload.promptTextEn;
 
   return (
     <div className="space-y-4">
       <div className="bg-gray-50 border rounded-lg p-4 text-sm leading-relaxed">
-        {payload.promptText}
+        {promptText}
       </div>
       <textarea
         disabled={disabled}

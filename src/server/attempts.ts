@@ -3,6 +3,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { db } from "./db";
 import { attempts, attemptItems, items, prompts } from "../../db/schema";
+import { gradeEssay } from "./writing-grader";
 import {
   decide,
   advanceStrand,
@@ -273,11 +274,43 @@ export async function recordResponse(
     .limit(1);
   if (!item) return { ok: false, error: "Item not found" };
 
-  const isCorrect = scoreResponse(item.format, item.payload, response);
+  let isCorrect = scoreResponse(item.format, item.payload, response);
+  let storedResponse = response as Record<string, unknown>;
+
+  // Essay items: call LLM grader; treat as "correct" if scored level ≥ item level
+  if (item.format === "essay") {
+    const essayText = (response as { text?: string })?.text ?? "";
+    const payload = item.payload as {
+      promptTextEn: string;
+      rubricId: string;
+    };
+
+    try {
+      const grading = await gradeEssay({
+        promptTextEn: payload.promptTextEn,
+        essayText,
+        rubricId: payload.rubricId,
+        itemLevel: item.level,
+      });
+
+      // Store grading result alongside the raw essay text
+      storedResponse = {
+        text: essayText,
+        grading,
+      };
+      // "Correct" = scored level meets or exceeds the item's target level
+      isCorrect = grading.scoredLevel >= item.level;
+    } catch (err) {
+      console.error(`[writing-grader] gradeEssay failed for item ${itemId}:`, err);
+      // Fall back: store raw text, treat as correct so the test can progress
+      storedResponse = { text: essayText, gradingError: String(err) };
+      isCorrect = true;
+    }
+  }
 
   await db
     .update(attemptItems)
-    .set({ response: response as Record<string, unknown>, isCorrect, timeMs })
+    .set({ response: storedResponse, isCorrect, timeMs })
     .where(
       and(
         eq(attemptItems.attemptId, attemptId),

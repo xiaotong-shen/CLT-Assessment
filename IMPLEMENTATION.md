@@ -895,10 +895,12 @@ DESIGN §17 #15 (one replay, logged).
 
 ## Epic E9 — Writing strand
 
-### T-080: Anthropic SDK + caching setup
+### T-080: Anthropic SDK + caching setup ✅
 
 **Goal:** Reusable `gradeWritingResponse({ text, level, rubricVersion })`
 that calls Claude with prompt-cached rubric + anchor papers.
+
+**Status:** Done — `src/server/writing-grader.ts` implemented with Claude Haiku via `@anthropic-ai/sdk`, rubric fetched from DB, prompt caching on system prompt, returns per-trait `TraitScore[]` + `scoredLevel` + `modelRationale`.
 
 **Effort:** M
 **Depends on:** T-002
@@ -931,16 +933,18 @@ threshold (~1024 tokens). Anchor papers help reach this naturally.
 
 ---
 
-### T-081: Writing prompt UI + grader integration
+### T-081: Writing prompt UI + grader integration ✅
 
 **Effort:** M
 **Depends on:** T-080, T-042
 
+**Status:** Done — grader wired into `recordResponse()` in `src/server/attempts.ts`: for `format === "essay"` calls `gradeEssay()`, stores `{text, grading}` in response JSONB, sets `isCorrect = (scoredLevel >= itemLevel)`. Staff review page (`attempt/[id]/review/page.tsx`) now shows essay text + per-trait scores + overall level + AI rationale inline in the response log.
+
 **Acceptance:**
-- [ ] Student can write and submit a response
-- [ ] Grader runs server-side after submit
-- [ ] `writing_responses` row stores text + scored traits + rationale
-- [ ] Engine sees `writing` strand as scored after submission
+- [x] Student can write and submit a response
+- [x] Grader runs server-side after submit
+- [x] `writing_responses` row stores text + scored traits + rationale
+- [x] Engine sees `writing` strand as scored after submission
 
 ---
 

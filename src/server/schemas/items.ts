@@ -45,7 +45,8 @@ export const ListeningMcPayloadSchema = z.object({
 });
 
 export const EssayPayloadSchema = z.object({
-  promptText: z.string().min(1),
+  promptTextEn: z.string().min(1),
+  promptTextZh: z.string().optional(),
   minWords: z.number().int().positive().default(50),
   maxWords: z.number().int().positive().default(300),
   rubricId: z.string(),

@@ -1,0 +1,87 @@
+[
+  {
+    "id": "write-L1-family-001",
+    "strand": "writing",
+    "level": 1,
+    "subskill": "simple-sentences",
+    "format": "essay",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 300,
+    "payload": {
+      "promptTextEn": "Write 3 sentences about your family. Who are they? Where do they live?",
+      "promptTextZh": "用3句话介绍你的家人。他们是谁？他们住在哪里？",
+      "minWords": 20,
+      "maxWords": 80,
+      "rubricId": "rubric-v1"
+    }
+  },
+  {
+    "id": "write-L2-school-001",
+    "strand": "writing",
+    "level": 2,
+    "subskill": "descriptive-paragraph",
+    "format": "essay",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 360,
+    "payload": {
+      "promptTextEn": "Describe your school or your home. Write at least 4 sentences. Include details about what you see and what you do there.",
+      "promptTextZh": "描述你的学校或家。请至少写4句话，包括你看到的和在那里做的事情。",
+      "minWords": 40,
+      "maxWords": 120,
+      "rubricId": "rubric-v1"
+    }
+  },
+  {
+    "id": "write-L3-daily-routine-001",
+    "strand": "writing",
+    "level": 3,
+    "subskill": "organized-paragraph",
+    "format": "essay",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 420,
+    "payload": {
+      "promptTextEn": "Write a short paragraph (5–8 sentences) describing a typical day in your life. Include what you do in the morning, afternoon, and evening.",
+      "promptTextZh": "写一段话（5至8句），描述你典型的一天。包括早上、下午和晚上你做什么。",
+      "minWords": 60,
+      "maxWords": 180,
+      "rubricId": "rubric-v1"
+    }
+  },
+  {
+    "id": "write-L4-challenge-001",
+    "strand": "writing",
+    "level": 4,
+    "subskill": "narrative-with-reflection",
+    "format": "essay",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 600,
+    "payload": {
+      "promptTextEn": "Write a paragraph (8–12 sentences) about a challenge you have faced and how you dealt with it. Include details about what happened, how you felt, and what you learned.",
+      "promptTextZh": "写一段话（8至12句），描述你曾经面临的一个挑战以及你是如何应对的。包括事情经过、你的感受以及你的收获。",
+      "minWords": 100,
+      "maxWords": 300,
+      "rubricId": "rubric-v1"
+    }
+  },
+  {
+    "id": "write-L5-opinion-001",
+    "strand": "writing",
+    "level": 5,
+    "subskill": "opinion-essay",
+    "format": "essay",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 900,
+    "payload": {
+      "promptTextEn": "Some people believe that students learn better when they study independently, while others think group work is more effective. Write two or three paragraphs presenting your opinion on this topic. Support your view with reasons and examples from your own experience.",
+      "promptTextZh": "有些人认为学生独立学习效果更好，另一些人则认为小组合作更有效。写两三段文字，表达你对这个话题的看法。用理由和你自己的经历来支持你的观点。",
+      "minWords": 150,
+      "maxWords": 450,
+      "rubricId": "rubric-v1"
+    }
+  }
+]

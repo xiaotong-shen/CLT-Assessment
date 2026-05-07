@@ -161,10 +161,12 @@ async function seedWritingPrompts(): Promise<void> {
 
 async function main(): Promise<void> {
   console.log("Seeding database...\n");
+  // Seed rubric first so essay items can reference it
+  await seedWritingPrompts(); // also creates rubric-v1
   await seedItems("reading.json");
   await seedItems("grammar.json");
   await seedItems("listening.json");
-  await seedWritingPrompts();
+  await seedItems("writing.json");
   console.log("\nDone.");
   await client.end();
 }
