@@ -1,11 +1,17 @@
 import { auth } from "@/server/auth";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/server/db";
-import { attempts, attemptItems, items } from "../../../../../../../db/schema";
-import { eq } from "drizzle-orm";
+import {
+  attempts,
+  attemptItems,
+  items,
+  recommendationOverrides,
+} from "../../../../../../../db/schema";
+import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 import type { Recommendation, Flag } from "@/engine/types";
 import type { TraitScore } from "@/server/writing-grader";
+import { OverrideForm } from "./OverrideForm";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -49,21 +55,30 @@ export default async function AttemptReviewPage({
 
   if (!attempt) notFound();
 
-  const rows = await db
-    .select({
-      ai: attemptItems,
-      item: {
-        subskill: items.subskill,
-        format: items.format,
-      },
-    })
-    .from(attemptItems)
-    .leftJoin(items, eq(attemptItems.itemId, items.id))
-    .where(eq(attemptItems.attemptId, id))
-    .orderBy(attemptItems.presentedAt);
+  const [rows, overrideRows] = await Promise.all([
+    db
+      .select({
+        ai: attemptItems,
+        item: {
+          subskill: items.subskill,
+          format: items.format,
+        },
+      })
+      .from(attemptItems)
+      .leftJoin(items, eq(attemptItems.itemId, items.id))
+      .where(eq(attemptItems.attemptId, id))
+      .orderBy(attemptItems.presentedAt),
+    db
+      .select()
+      .from(recommendationOverrides)
+      .where(eq(recommendationOverrides.attemptId, id))
+      .orderBy(desc(recommendationOverrides.createdAt))
+      .limit(1),
+  ]);
 
   const rec = attempt.recommendation as Recommendation | null;
   const intake = attempt.intakeAnswers as Record<string, string> | null;
+  const existingOverride = overrideRows[0] ?? null;
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
@@ -75,6 +90,14 @@ export default async function AttemptReviewPage({
           </Link>
           <span className="text-gray-300">|</span>
           <span className="font-mono text-xs text-gray-400">{id}</span>
+          {attempt.status === "complete" && (
+            <Link
+              href={`/${locale}/attempt/${id}/report`}
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              View Report →
+            </Link>
+          )}
           <span
             className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${
               attempt.status === "complete"
@@ -134,6 +157,39 @@ export default async function AttemptReviewPage({
                   <Stat key={strand} label={strand} value={String(level)} />
                 ))}
               </div>
+            )}
+
+            {/* Reasoning trace */}
+            {rec.reasoning && rec.reasoning.length > 0 && (
+              <details className="mt-4">
+                <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none">
+                  Engine reasoning trace ({rec.reasoning.length} steps)
+                </summary>
+                <ol className="mt-2 text-xs text-gray-500 space-y-0.5 list-decimal list-inside leading-relaxed">
+                  {rec.reasoning.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ol>
+              </details>
+            )}
+
+            {/* Override form — only for complete attempts */}
+            {attempt.status === "complete" && (
+              <OverrideForm
+                attemptId={id}
+                currentCourse={rec.course}
+                currentStream={rec.stream as "esl" | "eld" | "mainstream"}
+                existingOverride={
+                  existingOverride
+                    ? {
+                        course: (existingOverride.override as { course: string }).course,
+                        stream: (existingOverride.override as { stream: "esl" | "eld" | "mainstream" }).stream,
+                        reason: existingOverride.reason,
+                        createdAt: existingOverride.createdAt,
+                      }
+                    : null
+                }
+              />
             )}
           </section>
         ) : (
