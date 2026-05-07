@@ -647,7 +647,7 @@ overkill — ignore unless seed gets slow.)
 
 ---
 
-### T-031: Specialist item-authoring UI (minimal)
+### ✅ T-031: Specialist item-authoring UI (minimal)
 
 **Goal:** Specialist can list items, edit metadata (level, subskill,
 status), and toggle `status: drafted → reviewed → live → retired`. No
@@ -662,11 +662,13 @@ WYSIWYG passage editor in MVP — payload is a JSON textarea.
 - `src/app/api/items/route.ts`
 - `src/app/api/items/[id]/route.ts`
 
+**Status:** item list page at `items/page.tsx`, item edit form at `items/[id]/page.tsx` + `ItemEditForm.tsx` for metadata/payload editing. Override UI (`OverrideForm.tsx`) on review page with `POST /api/attempts/[id]/override` API. Engine reasoning trace shown in collapsible `<details>` on review page.
+
 **Acceptance:**
-- [ ] Specialist (logged in) can change an item's status
-- [ ] Student role hitting `/items` is redirected
-- [ ] Invalid payload JSON is rejected with field-level error
-- [ ] Audit log records who changed which item when
+- [x] Specialist (logged in) can change an item's status
+- [x] Student role hitting `/items` is redirected
+- [x] Invalid payload JSON is rejected with field-level error
+- [x] Audit log records who changed which item when
 
 **Pitfalls:** This is a tool, not a product surface. Keep it ugly and
 functional. shadcn/ui table + form is plenty.
@@ -1026,7 +1028,7 @@ Vercel compatibility. Larger function bundle but it works.
 
 ---
 
-### T-093: Dynamic content translation
+### ✅ T-093: Dynamic content translation
 
 **Goal:** Per-student strings (e.g. specific subskill recommendations) are
 generated EN-first, then translated to zh-Hans on demand via Claude.
@@ -1039,25 +1041,29 @@ generated EN-first, then translated to zh-Hans on demand via Claude.
 **Approach:** Batched single Claude call: input EN strings, output
 zh-Hans. Cache by hash to avoid re-translating identical strings.
 
+**Status:** `src/server/translate.ts` implements `translateBatch()` using claude-haiku-4-5 with prompt caching on the stable system prompt, in-process cache keyed by SHA-256 hash. `src/app/api/attempts/[id]/translate/route.ts` translates reasoning, flag details, essay trait rationales, and model rationale in a single batch call. Report page (`ReportContent.tsx`) has a zh-Hans toggle via `TranslateToggle.tsx` client component.
+
 **Acceptance:**
-- [ ] Translating the same EN strings twice hits the cache (0 API calls)
-- [ ] Output is parseable JSON, not free text
-- [ ] Cost per attempt is logged for the cost model
+- [x] Translating the same EN strings twice hits the cache (0 API calls)
+- [x] Output is parseable JSON, not free text
+- [x] Cost per attempt is logged for the cost model
 
 ---
 
-### T-094: Audit-trail JSON export
+### ✅ T-094: Audit-trail JSON export
 
 **Effort:** S
 **Depends on:** T-041
 
 **Files:** `src/app/api/attempts/[id]/audit.json/route.ts`
 
+**Status:** `GET /api/attempts/[id]/audit.json` returns attemptId, engineVersion, itemBankSnapshotId, startedAt, finishedAt, status, intakeAnswers, recommendation, writingGrading, specialistOverride (latest), and all items. Specialist-only (403 for students, 401 for unauthenticated).
+
 **Acceptance:**
-- [ ] Endpoint returns a JSON dump containing: intake, every item shown,
+- [x] Endpoint returns a JSON dump containing: intake, every item shown,
       every response, engine version, item-bank snapshot id, all flags,
       writing rationale, override (if any)
-- [ ] Specialist-only — students get 403
+- [x] Specialist-only — students get 403
 
 ---
 
