@@ -31,10 +31,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   secret: env.AUTH_SECRET,
   providers: [
-    ResendProvider({
-      from: "ESL Assessment <no-reply@clt-assessment.ca>",
-      apiKey: env.RESEND_API_KEY,
-    }),
+    // Resend is only registered when an API key is configured.
+    // Without it, magic-link sign-in is disabled but Credentials still works.
+    ...(env.RESEND_API_KEY
+      ? [
+          ResendProvider({
+            from: "ESL Assessment <no-reply@clt-assessment.ca>",
+            apiKey: env.RESEND_API_KEY,
+          }),
+        ]
+      : []),
     CredentialsProvider({
       name: "Staff Login",
       credentials: {
