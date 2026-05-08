@@ -202,7 +202,7 @@ describe("MSAT engine", () => {
     }
   });
 
-  it("routes ELD when listening >> reading", () => {
+  it("always routes ESL even when listening >> reading (ELD disabled for this cohort)", () => {
     const state = makeState({
       strandProgress: {
         reading: { stage: "done", trackLevels: [], estimatedLevel: 1 },
@@ -214,10 +214,10 @@ describe("MSAT engine", () => {
     const decision = decide(state, Date.now());
     expect(decision.kind).toBe("done");
     if (decision.kind === "done") {
-      expect(decision.recommendation.stream).toBe("ELD");
-      expect(decision.recommendation.course).toBe("ELDAO"); // lowest = 1
+      expect(decision.recommendation.stream).toBe("ESL");
+      expect(decision.recommendation.course).toBe("ESLAO"); // lowest = 1 → ESLAO
       const codes = decision.recommendation.flags.map((f) => f.code);
-      expect(codes).toContain("stream-eld");
+      expect(codes).not.toContain("stream-eld");
     }
   });
 

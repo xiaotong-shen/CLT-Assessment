@@ -9,7 +9,7 @@ import { createId } from "@paralleldrive/cuid2";
 
 const OverrideBodySchema = z.object({
   course: z.string().min(1),
-  stream: z.enum(["esl", "eld", "mainstream"]),
+  stream: z.enum(["esl", "mainstream"]),
   reason: z.string().min(1).max(1000),
 });
 

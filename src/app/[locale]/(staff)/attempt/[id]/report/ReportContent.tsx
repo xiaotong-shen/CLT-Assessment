@@ -46,10 +46,6 @@ const FLAG_LABELS: Record<string, { label: string; note: string }> = {
     label: "Borderline Placement",
     note: "Results place the student near a boundary between levels. Specialist review is advised.",
   },
-  "stream-eld": {
-    label: "ELD Stream Indicated",
-    note: "Results suggest the student may benefit from the English Literacy Development (ELD) program rather than ESL.",
-  },
   rushed: {
     label: "Short Response Times",
     note: "Several responses were submitted very quickly. Consider whether this student was able to engage fully.",

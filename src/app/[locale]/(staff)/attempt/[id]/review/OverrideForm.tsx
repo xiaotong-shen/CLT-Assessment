@@ -3,11 +3,10 @@ import { useState, type FormEvent } from "react";
 
 const COURSES = [
   "ESLAO", "ESLBO", "ESLCO", "ESLDO", "ESLEO",
-  "ELDAO", "ELDBO", "ELDCO", "ELDDO", "ELDEO",
   "Mainstream",
 ] as const;
 
-type Stream = "esl" | "eld" | "mainstream";
+type Stream = "esl" | "mainstream";
 
 interface Props {
   attemptId: string;
@@ -129,7 +128,6 @@ export function OverrideForm({
                 className="w-full border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
                 <option value="esl">ESL</option>
-                <option value="eld">ELD</option>
                 <option value="mainstream">Mainstream</option>
               </select>
             </div>

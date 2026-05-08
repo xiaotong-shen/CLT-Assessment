@@ -178,12 +178,12 @@ export default async function AttemptReviewPage({
               <OverrideForm
                 attemptId={id}
                 currentCourse={rec.course}
-                currentStream={rec.stream as "esl" | "eld" | "mainstream"}
+                currentStream={rec.stream.toLowerCase() as "esl" | "mainstream"}
                 existingOverride={
                   existingOverride
                     ? {
                         course: (existingOverride.override as { course: string }).course,
-                        stream: (existingOverride.override as { stream: "esl" | "eld" | "mainstream" }).stream,
+                        stream: (existingOverride.override as { stream: "esl" | "mainstream" }).stream,
                         reason: existingOverride.reason,
                         createdAt: existingOverride.createdAt,
                       }

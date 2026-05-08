@@ -5,7 +5,6 @@ const EXPECTED_TOTAL_MS = 45 * 60 * 1000; // 45 minutes
 export function computeFlags(
   state: AttemptState,
   perStrandLevel: Record<Strand, Level>,
-  stream: "ESL" | "ELD",
   nowMs: number
 ): Flag[] {
   const flags: Flag[] = [];
@@ -19,15 +18,6 @@ export function computeFlags(
       code: "uneven-profile",
       severity: "review",
       detail: `Strand levels span ${min}–${max}. Student profile is uneven.`,
-    });
-  }
-
-  // ELD routing always flagged
-  if (stream === "ELD") {
-    flags.push({
-      code: "stream-eld",
-      severity: "review",
-      detail: "Student routed to ELD stream. Specialist review required.",
     });
   }
 
@@ -50,9 +40,6 @@ export function computeFlags(
       detail: `${rapidItems.length} items answered in under 2 seconds.`,
     });
   }
-
-  // Writing blank: writing prompt response missing at level >= 3
-  // (checked separately in the writing grader; placeholder here)
 
   return flags;
 }

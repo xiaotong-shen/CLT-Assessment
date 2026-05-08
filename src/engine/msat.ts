@@ -250,7 +250,7 @@ function buildRecommendation(
   const lowestLevel = Math.min(...Object.values(perStrandLevel)) as Level;
   const course = mapToCourse(stream, lowestLevel);
 
-  const runtimeFlags = computeFlags(state, perStrandLevel, stream, nowMs);
+  const runtimeFlags = computeFlags(state, perStrandLevel, nowMs);
   const allFlags = [...streamFlags, ...runtimeFlags];
 
   const reasoning = buildReasoning(state, perStrandLevel, stream, course);
@@ -271,7 +271,7 @@ function buildRecommendation(
 function buildReasoning(
   state: AttemptState,
   perStrandLevel: Record<Strand, Level>,
-  stream: "ESL" | "ELD",
+  stream: string,
   course: string
 ): string[] {
   const lines: string[] = [];

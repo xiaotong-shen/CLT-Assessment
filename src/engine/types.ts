@@ -1,7 +1,8 @@
 // Pure types — no imports from src/server or Next.js.
 
 export type Strand = "reading" | "listening" | "grammar" | "writing";
-export type Stream = "ESL" | "ELD";
+/** All students are assessed via ESL. ELD routing is disabled for this cohort. */
+export type Stream = "ESL";
 export type Stage = "route" | "target" | "confirm";
 
 /** 1–5 = ESL/ELD course level; 6 = mainstream-ready (STEP step 6, no ESL needed) */
@@ -85,7 +86,6 @@ export interface Flag {
 export type FlagCode =
   | "uneven-profile"
   | "stage-3-ambiguous"
-  | "stream-eld"
   | "rushed"
   | "rapid-clicks"
   | "writing-blank"
