@@ -5,7 +5,6 @@ import ResendProvider from "next-auth/providers/resend";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { createId } from "@paralleldrive/cuid2";
 import { db } from "./db";
 import { users } from "../../db/schema";
 import { env } from "@/lib/env";
@@ -73,55 +72,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
     // ─── Dev-only bypass provider ─────────────────────────────────────────
-    // Only active when NODE_ENV !== "production". Lets you sign in as an
-    // auto-provisioned admin user with one click, no password required.
-    // Returns null in production to make the provider a no-op even if it
-    // somehow gets called.
+    // Returns a hardcoded admin user with NO database calls — works even if
+    // the DB isn't migrated yet. Disabled in production (returns null).
     CredentialsProvider({
       id: "dev-bypass",
       name: "Dev Bypass",
       credentials: {},
       async authorize() {
         if (!IS_DEV) return null;
-
-        const email = "dev@local";
-        let [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, email))
-          .limit(1);
-
-        if (!user) {
-          const id = createId();
-          await db.insert(users).values({
-            id,
-            email,
-            name: "Dev Admin",
-            role: "admin",
-          });
-          [user] = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, email))
-            .limit(1);
-        }
-
-        if (!user) return null;
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        // Return a synthetic user with role pre-embedded so the jwt callback
+        // skips its DB lookup entirely.
+        return {
+          id: "dev-admin-local",
+          email: "dev@local",
+          name: "Dev Admin",
+          role: "admin",
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // On sign-in, embed role in token
-        const dbUser = await db
-          .select({ role: users.role })
-          .from(users)
-          .where(eq(users.id, user.id!))
-          .limit(1);
-        token["role"] = dbUser[0]?.role ?? "student";
-        token["userId"] = user.id;
+        const presetRole = (user as { role?: string }).role;
+        if (presetRole) {
+          // Role already embedded (dev bypass or credentials authorize).
+          // Skip the extra DB round-trip.
+          token["role"] = presetRole;
+          token["userId"] = user.id;
+        } else {
+          // Fallback: look up role from DB (e.g. magic-link sign-in).
+          const dbUser = await db
+            .select({ role: users.role })
+            .from(users)
+            .where(eq(users.id, user.id!))
+            .limit(1);
+          token["role"] = dbUser[0]?.role ?? "student";
+          token["userId"] = user.id;
+        }
       }
       return token;
     },
