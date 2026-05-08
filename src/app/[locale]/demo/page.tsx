@@ -45,8 +45,14 @@ type DemoNext =
       strand: Strand;
       state: AttemptState;
       explain: DemoExplain;
+      lastCorrect?: boolean;
     }
-  | { done: true; recommendation: Recommendation; explain: DemoExplain };
+  | {
+      done: true;
+      recommendation: Recommendation;
+      explain: DemoExplain;
+      lastCorrect?: boolean;
+    };
 
 type StrandFilter = Strand | "all";
 
@@ -193,6 +199,7 @@ export default function DemoPage() {
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [lastExplain, setLastExplain] = useState<DemoExplain | null>(null);
+  const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
   const itemStartMs = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -216,7 +223,7 @@ export default function DemoPage() {
       currentState: AttemptState,
       response?: {
         itemId: string;
-        correct: boolean;
+        raw: unknown;
         timeMs: number;
         stage: Stage;
         strand: Strand;
@@ -239,6 +246,9 @@ export default function DemoPage() {
         }
         const data = (await res.json()) as DemoNext;
         setLastExplain(data.explain ?? null);
+        setLastCorrect(
+          typeof data.lastCorrect === "boolean" ? data.lastCorrect : null
+        );
         if ("done" in data) {
           setRecommendation(data.recommendation);
         } else {
@@ -265,6 +275,7 @@ export default function DemoPage() {
     setState(initial);
     setRecommendation(null);
     setLastExplain(null);
+    setLastCorrect(null);
     fetchNext(initial);
   }
 
@@ -274,6 +285,7 @@ export default function DemoPage() {
     setCurrent(null);
     setRecommendation(null);
     setLastExplain(null);
+    setLastCorrect(null);
     setError(null);
   }
 
@@ -282,33 +294,11 @@ export default function DemoPage() {
     setSubmitting(true);
     const timeMs = Date.now() - itemStartMs.current;
 
-    const payload = current.item.payload as Record<string, unknown>;
-    let correct = false;
-    if (current.item.format === "mc-single") {
-      correct = response === payload["correctAnswer"];
-    } else if (current.item.format === "mc-multi") {
-      const correct_arr = (payload["correctAnswers"] as string[]) ?? [];
-      const resp_arr = (response as string[]) ?? [];
-      correct =
-        correct_arr.length === resp_arr.length &&
-        correct_arr.every((a) => resp_arr.includes(a));
-    } else if (current.item.format === "cloze") {
-      const blanks = (payload["blanks"] as { correctAnswer: string }[]) ?? [];
-      const resps = (response as string[]) ?? [];
-      correct = blanks.every(
-        (b, i) =>
-          b.correctAnswer.trim().toLowerCase() ===
-          (resps[i] ?? "").trim().toLowerCase()
-      );
-    } else if (current.item.format === "essay") {
-      correct = true;
-    } else {
-      correct = true;
-    }
-
+    // Send the raw response — the server has the full item payload (including
+    // correctOptionId, which is stripped from the client schema) and scores it.
     const responsePayload = {
       itemId: current.item.id,
-      correct,
+      raw: response,
       timeMs,
       stage: current.stage,
       strand: current.strand,
@@ -421,6 +411,18 @@ export default function DemoPage() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-6">
         {/* LEFT — question card */}
         <div>
+          {/* Last-answer feedback */}
+          {lastCorrect !== null && !loading && current && (
+            <div
+              className={`mb-3 inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full ${
+                lastCorrect
+                  ? "bg-green-100 text-green-800 border border-green-200"
+                  : "bg-red-100 text-red-800 border border-red-200"
+              }`}
+            >
+              {lastCorrect ? "✓ Previous answer correct" : "✗ Previous answer wrong"}
+            </div>
+          )}
           {current && !loading && (
             <div className="mb-3 flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wide">
               <span className="capitalize">{current.strand}</span>

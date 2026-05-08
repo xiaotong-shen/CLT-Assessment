@@ -2,8 +2,10 @@
  * Stateless demo endpoint — no DB writes.
  *
  * POST /api/demo/next
- * Body: { state: AttemptState, response?: {...}, strandFilter?: Strand }
- * Returns: { item, stage, strand, state, explain } | { done: true, recommendation, explain }
+ * Body: { state, response?: { itemId, raw, timeMs, stage, strand, level } }
+ *   `raw` is the raw user response (string for mc-single, string[] for mc-multi/cloze, etc.)
+ *   The server fetches the item from DB and scores correctness against the full payload.
+ * Returns: { item, stage, strand, state, explain, lastCorrect? } | { done, recommendation, explain, lastCorrect? }
  */
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -26,7 +28,7 @@ import type {
 
 const ResponseSchema = z.object({
   itemId: z.string(),
-  correct: z.boolean(),
+  raw: z.unknown(),
   timeMs: z.number(),
   stage: z.string(),
   strand: z.string(),
@@ -36,10 +38,44 @@ const ResponseSchema = z.object({
 const BodySchema = z.object({
   state: z.custom<AttemptState>(),
   response: ResponseSchema.optional(),
-  strandFilter: z
-    .enum(["reading", "listening", "grammar", "writing"])
-    .optional(),
 });
+
+// ---------------------------------------------------------------------------
+// Server-side correctness scoring.
+// Has access to the full item payload (including correctOptionId etc.).
+// ---------------------------------------------------------------------------
+function scoreResponse(
+  format: string,
+  payload: Record<string, unknown>,
+  raw: unknown
+): boolean {
+  if (format === "mc-single" || format === "listening-mc") {
+    return raw === payload["correctOptionId"];
+  }
+  if (format === "mc-multi") {
+    const correctIds = (payload["correctOptionIds"] as string[]) ?? [];
+    const respIds = Array.isArray(raw) ? (raw as string[]) : [];
+    return (
+      correctIds.length === respIds.length &&
+      correctIds.every((id) => respIds.includes(id))
+    );
+  }
+  if (format === "cloze") {
+    const blanks = (payload["blanks"] as { correctAnswer: string }[]) ?? [];
+    const resps = Array.isArray(raw) ? (raw as string[]) : [];
+    if (blanks.length !== resps.length) return false;
+    return blanks.every(
+      (b, i) =>
+        b.correctAnswer.trim().toLowerCase() ===
+        (resps[i] ?? "").trim().toLowerCase()
+    );
+  }
+  if (format === "essay") {
+    // In demo, essays always advance the engine
+    return true;
+  }
+  return true;
+}
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -50,12 +86,32 @@ export async function POST(req: Request) {
 
   let state: AttemptState = parsed.data.state;
   const incoming = parsed.data.response;
+  let lastCorrect: boolean | undefined;
 
-  // Apply the response to state if provided
+  // Apply the response — score on the server using the full DB payload.
   if (incoming) {
+    const [row] = await db
+      .select()
+      .from(items)
+      .where(eq(items.id, incoming.itemId));
+
+    if (!row) {
+      return NextResponse.json(
+        { error: `Item not found: ${incoming.itemId}` },
+        { status: 400 }
+      );
+    }
+
+    const correct = scoreResponse(
+      row.format,
+      row.payload as Record<string, unknown>,
+      incoming.raw
+    );
+    lastCorrect = correct;
+
     const newResponse: Response = {
       itemId: incoming.itemId,
-      correct: incoming.correct,
+      correct,
       timeMs: incoming.timeMs,
       stage: incoming.stage as Stage,
       strand: incoming.strand as Strand,
@@ -63,8 +119,6 @@ export async function POST(req: Request) {
     };
 
     const updatedResponses = [...state.responses, newResponse];
-
-    // Check if the strand stage is complete (every 4 responses in this stage)
     const strandResponses = updatedResponses.filter(
       (r) => r.strand === incoming.strand && r.stage === incoming.stage
     );
@@ -76,7 +130,10 @@ export async function POST(req: Request) {
         state.strandProgress[incoming.strand as Strand],
         { ...state, responses: updatedResponses }
       );
-      updatedProgress = { ...updatedProgress, [incoming.strand]: newProgress };
+      updatedProgress = {
+        ...updatedProgress,
+        [incoming.strand]: newProgress,
+      };
     }
 
     state = {
@@ -94,6 +151,7 @@ export async function POST(req: Request) {
       done: true,
       recommendation: decision.recommendation,
       explain,
+      lastCorrect,
     });
   }
 
@@ -113,7 +171,9 @@ export async function POST(req: Request) {
 
   if (filtered.length === 0) {
     return NextResponse.json(
-      { error: `No live items available for ${strand} at levels [${constraints.levels.join(",")}]` },
+      {
+        error: `No live items available for ${strand} at levels [${constraints.levels.join(",")}]`,
+      },
       { status: 500 }
     );
   }
@@ -142,5 +202,6 @@ export async function POST(req: Request) {
     strand,
     state,
     explain,
+    lastCorrect,
   });
 }
