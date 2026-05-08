@@ -27,7 +27,7 @@ export default async function HomePage({
         {/* Header */}
         <div>
           <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-2">
-            {isZh ? "英语安置评估" : "ESL/ELD Placement Assessment"}
+            {isZh ? "英语安置评估" : "ESL Placement Assessment"}
           </p>
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
             {isZh ? "欢迎！" : "Welcome!"}

@@ -6,9 +6,7 @@ import { useRouter } from "next/navigation";
 type IntakeAnswers = {
   name: string;
   dob: string;
-  l1: string;
   schoolingYears: string;
-  l1LiteracySelfRating: string;
 };
 
 export default function IntakePage() {
@@ -19,9 +17,7 @@ export default function IntakePage() {
   const [form, setForm] = useState<IntakeAnswers>({
     name: "",
     dob: "",
-    l1: "",
     schoolingYears: "",
-    l1LiteracySelfRating: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,11 +27,7 @@ export default function IntakePage() {
   }
 
   const valid =
-    form.name.trim() &&
-    form.dob &&
-    form.l1.trim() &&
-    form.schoolingYears &&
-    form.l1LiteracySelfRating;
+    form.name.trim() && form.dob && form.schoolingYears;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -99,21 +91,6 @@ export default function IntakePage() {
             />
           </div>
 
-          {/* First language */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              {t("q.l1.label")}
-            </label>
-            <input
-              type="text"
-              required
-              placeholder={t("q.l1.placeholder")}
-              value={form.l1}
-              onChange={(e) => set("l1", e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
           {/* Years of schooling */}
           <div>
             <label className="block text-sm font-medium mb-1">
@@ -129,37 +106,6 @@ export default function IntakePage() {
               onChange={(e) => set("schoolingYears", e.target.value)}
               className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-
-          {/* L1 literacy self-rating */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t("q.l1LiteracySelfRating.label")}
-            </label>
-            <div className="space-y-2">
-              {(["1", "2", "3", "4", "5"] as const).map((v) => (
-                <label
-                  key={v}
-                  className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                    form.l1LiteracySelfRating === v
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="l1LiteracySelfRating"
-                    value={v}
-                    checked={form.l1LiteracySelfRating === v}
-                    onChange={() => set("l1LiteracySelfRating", v)}
-                    className="mt-0.5"
-                  />
-                  <span className="text-sm">
-                    {t(`q.l1LiteracySelfRating.options.${v}`)}
-                  </span>
-                </label>
-              ))}
-            </div>
           </div>
 
           {error && <p className="text-red-600 text-sm">{error}</p>}

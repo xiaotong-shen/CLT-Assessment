@@ -137,7 +137,7 @@ export function ReportContent({
       {/* Print-only school header */}
       <div className="hidden print:block border-b-2 border-gray-800 pb-3 mb-2">
         <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
-          ESL/ELD Placement Assessment · Confidential
+          ESL Placement Assessment · Confidential
         </p>
         <p className="text-xs text-gray-400 mt-0.5">
           Generated: {new Date().toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })}
@@ -149,7 +149,7 @@ export function ReportContent({
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">
-              {isZh ? "英语/英语素养发展安置评估" : "ESL/ELD Placement Assessment"}
+              {isZh ? "英语安置评估" : "ESL Placement Assessment"}
             </p>
             <h1 className="text-2xl font-bold text-gray-900">{studentName}</h1>
             <p className="text-sm text-gray-500 mt-0.5">

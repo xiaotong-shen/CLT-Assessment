@@ -3,12 +3,15 @@ import { signIn } from "next-auth/react";
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 
+const IS_DEV = process.env.NODE_ENV !== "production";
+
 export default function StaffLoginPage() {
   const t = useTranslations("common");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [bypassLoading, setBypassLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -22,6 +25,18 @@ export default function StaffLoginPage() {
     setLoading(false);
     if (result?.error) {
       setError("Invalid email or password.");
+    } else {
+      window.location.href = `/${document.documentElement.lang}/queue`;
+    }
+  }
+
+  async function handleDevBypass() {
+    setError(null);
+    setBypassLoading(true);
+    const result = await signIn("dev-bypass", { redirect: false });
+    setBypassLoading(false);
+    if (result?.error) {
+      setError("Dev bypass failed. Are you running in development mode?");
     } else {
       window.location.href = `/${document.documentElement.lang}/queue`;
     }
@@ -55,12 +70,32 @@ export default function StaffLoginPage() {
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || bypassLoading}
             className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? t("loading") : "Sign in"}
           </button>
         </form>
+
+        {/* Dev-only sign-in bypass — never rendered in production */}
+        {IS_DEV && (
+          <div className="mt-6 pt-6 border-t border-dashed border-amber-300">
+            <p className="text-xs font-mono text-amber-700 mb-2">
+              ⚠ DEV MODE — bypass disabled in production builds
+            </p>
+            <button
+              type="button"
+              onClick={handleDevBypass}
+              disabled={loading || bypassLoading}
+              className="w-full bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg py-2 text-sm font-medium border border-amber-300 disabled:opacity-50"
+            >
+              {bypassLoading ? "Signing in…" : "🔓 Sign in as Dev Admin"}
+            </button>
+            <p className="text-xs text-gray-400 mt-2">
+              Auto-provisions a <span className="font-mono">dev@local</span> admin user.
+            </p>
+          </div>
+        )}
       </div>
     </main>
   );

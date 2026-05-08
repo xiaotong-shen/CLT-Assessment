@@ -5,9 +5,13 @@ import ResendProvider from "next-auth/providers/resend";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { createId } from "@paralleldrive/cuid2";
 import { db } from "./db";
 import { users } from "../../db/schema";
 import { env } from "@/lib/env";
+
+/** True when running locally for development. Never true in Vercel/production. */
+const IS_DEV = process.env.NODE_ENV !== "production";
 
 declare module "next-auth" {
   interface Session {
@@ -59,6 +63,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, hash);
         if (!valid) return null;
 
+        return { id: user.id, email: user.email, name: user.name, role: user.role };
+      },
+    }),
+    // ─── Dev-only bypass provider ─────────────────────────────────────────
+    // Only active when NODE_ENV !== "production". Lets you sign in as an
+    // auto-provisioned admin user with one click, no password required.
+    // Returns null in production to make the provider a no-op even if it
+    // somehow gets called.
+    CredentialsProvider({
+      id: "dev-bypass",
+      name: "Dev Bypass",
+      credentials: {},
+      async authorize() {
+        if (!IS_DEV) return null;
+
+        const email = "dev@local";
+        let [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, email))
+          .limit(1);
+
+        if (!user) {
+          const id = createId();
+          await db.insert(users).values({
+            id,
+            email,
+            name: "Dev Admin",
+            role: "admin",
+          });
+          [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))
+            .limit(1);
+        }
+
+        if (!user) return null;
         return { id: user.id, email: user.email, name: user.name, role: user.role };
       },
     }),

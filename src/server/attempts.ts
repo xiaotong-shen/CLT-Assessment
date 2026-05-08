@@ -49,11 +49,33 @@ export async function createAttempt(
     .sort()
     .join(",");
 
+  // Normalise intake: derive ageYears from dob if provided, and supply
+  // engine-internal defaults that are no longer collected from the user
+  // (l1 is always Chinese for this cohort; l1LiteracySelfRating is no
+  // longer used for routing since ELD was disabled).
+  const dob = typeof intake["dob"] === "string" ? (intake["dob"] as string) : null;
+  const ageYears = dob ? Math.max(0, Math.floor((Date.now() - new Date(dob).getTime()) / (365.25 * 24 * 3600 * 1000))) : 16;
+  const yearsOfSchoolingRaw = intake["schoolingYears"] ?? intake["yearsOfSchooling"];
+  const yearsOfSchooling =
+    typeof yearsOfSchoolingRaw === "string"
+      ? parseInt(yearsOfSchoolingRaw, 10) || 0
+      : typeof yearsOfSchoolingRaw === "number"
+        ? yearsOfSchoolingRaw
+        : 0;
+
+  const normalisedIntake = {
+    ...intake,
+    l1: (intake["l1"] as string | undefined) ?? "zh",
+    l1LiteracySelfRating: 5, // default: assumed L1 fluent
+    yearsOfSchooling,
+    ageYears,
+  };
+
   await db.insert(attempts).values({
     id,
     userId: userId ?? null,
     status: "in-progress",
-    intakeAnswers: intake,
+    intakeAnswers: normalisedIntake,
     engineVersion,
     itemBankSnapshotId: snapshotHash,
   });
