@@ -49,31 +49,39 @@ function scoreResponse(
   payload: Record<string, unknown>,
   raw: unknown
 ): boolean {
+  // mc-single & listening-mc submit { optionId: string }
   if (format === "mc-single" || format === "listening-mc") {
-    return raw === payload["correctOptionId"];
+    const picked = (raw as { optionId?: string } | null)?.optionId;
+    return picked === payload["correctOptionId"];
   }
+
+  // mc-multi submits { optionIds: string[] }
   if (format === "mc-multi") {
     const correctIds = (payload["correctOptionIds"] as string[]) ?? [];
-    const respIds = Array.isArray(raw) ? (raw as string[]) : [];
+    const picked = (raw as { optionIds?: string[] } | null)?.optionIds ?? [];
     return (
-      correctIds.length === respIds.length &&
-      correctIds.every((id) => respIds.includes(id))
+      correctIds.length === picked.length &&
+      correctIds.every((id) => picked.includes(id))
     );
   }
+
+  // cloze submits Record<blankId, string>; payload.blanks: [{ id, correctAnswer }]
   if (format === "cloze") {
-    const blanks = (payload["blanks"] as { correctAnswer: string }[]) ?? [];
-    const resps = Array.isArray(raw) ? (raw as string[]) : [];
-    if (blanks.length !== resps.length) return false;
+    const blanks = (payload["blanks"] as
+      | { id: string; correctAnswer: string }[]
+      | undefined) ?? [];
+    const answers = (raw as Record<string, string> | null) ?? {};
+    if (blanks.length === 0) return false;
     return blanks.every(
-      (b, i) =>
+      (b) =>
         b.correctAnswer.trim().toLowerCase() ===
-        (resps[i] ?? "").trim().toLowerCase()
+        (answers[b.id] ?? "").trim().toLowerCase()
     );
   }
-  if (format === "essay") {
-    // In demo, essays always advance the engine
-    return true;
-  }
+
+  // Essays always advance the engine in demo mode
+  if (format === "essay") return true;
+
   return true;
 }
 
