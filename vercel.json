@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "regions": ["cle1"],
+  "env": {
+    "DATABASE_URL": "@database-url",
+    "AUTH_SECRET": "@auth-secret",
+    "AUTH_URL": "@auth-url",
+    "ANTHROPIC_API_KEY": "@anthropic-api-key",
+    "RESEND_API_KEY": "@resend-api-key"
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ],
+  "crons": []
+}

@@ -17,3 +17,85 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ─── Print / PDF styles (T-092) ─────────────────────────────────────────── */
+@media print {
+  /* Page setup: A4, portrait, 15mm margins */
+  @page {
+    size: A4 portrait;
+    margin: 15mm 18mm 15mm 18mm;
+  }
+
+  /* Preserve colours for ink-exact printing */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide nav chrome — Tailwind's print:hidden utility handles most;
+     this catches any element that might still slip through */
+  nav,
+  header,
+  aside {
+    display: none !important;
+  }
+
+  /* Make report container fill the page */
+  main {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .max-w-3xl {
+    max-width: 100% !important;
+  }
+
+  /* Cards: strip shadows and rounded corners */
+  section {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    page-break-inside: avoid;
+  }
+
+  /* Preserve key colours */
+  .bg-indigo-500 { background-color: #4f46e5 !important; }
+  .text-indigo-700 { color: #3730a3 !important; }
+
+  /* Amber flags section */
+  .bg-amber-50 {
+    background-color: #fffbeb !important;
+    border: 1pt solid #f59e0b !important;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 12pt;
+    padding-bottom: 0 !important;
+    font-size: 8pt;
+    color: #9ca3af !important;
+    border-top: 0.5pt solid #e5e7eb;
+    padding-top: 4pt;
+  }
+
+  /* Prevent headings from detaching from their content */
+  h1, h2 { page-break-after: avoid; }
+
+  /* Keep strand progress rows together */
+  .space-y-3 > * { page-break-inside: avoid; }
+}

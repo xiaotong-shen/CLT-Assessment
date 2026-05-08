@@ -131,15 +131,25 @@ export function ReportContent({
           />
           <button
             onClick={() => window.print()}
-            className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded"
+            className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded shadow-sm"
           >
-            {isZh ? "打印 / 存为 PDF" : "Print / Save PDF"}
+            {isZh ? "🖨 打印 / 存为 PDF" : "🖨 Print / Save PDF"}
           </button>
         </div>
       </div>
 
+      {/* Print-only school header */}
+      <div className="hidden print:block border-b-2 border-gray-800 pb-3 mb-2">
+        <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
+          ESL/ELD Placement Assessment · Confidential
+        </p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Generated: {new Date().toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })}
+        </p>
+      </div>
+
       {/* Report header */}
-      <section className="bg-white rounded-xl shadow p-6 print:shadow-none print:rounded-none print:border-b-2 print:border-gray-800">
+      <section className="bg-white rounded-xl shadow p-6 print:shadow-none print:rounded-none print:border-b print:border-gray-200">
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">
