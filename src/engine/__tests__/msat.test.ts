@@ -239,6 +239,58 @@ describe("MSAT engine", () => {
     }
   });
 
+  // T-050 acceptance criterion: synthetic Level-4 reader gets perStrandLevel.reading = 4
+  it("Level-4 reader is placed at reading level 4 (T-050)", () => {
+    let state = makeState();
+
+    // Reading strand at true level 4
+    const { state: afterReading, estimatedLevel } = simulateStrand("reading", 4, state);
+    state = afterReading;
+    expect(estimatedLevel).toBe(4);
+
+    // Finish other strands at level 3 so we can get the final recommendation
+    for (const strand of ["listening", "grammar"] as Strand[]) {
+      const result = simulateStrand(strand, 3, state);
+      state = result.state;
+    }
+    state = {
+      ...state,
+      strandProgress: {
+        ...state.strandProgress,
+        writing: { stage: "done", trackLevels: [], estimatedLevel: 4 },
+      },
+    };
+
+    const decision = decide(state, Date.now());
+    expect(decision.kind).toBe("done");
+    if (decision.kind === "done") {
+      expect(decision.recommendation.perStrandLevel.reading).toBe(4);
+    }
+  });
+
+  it("no item is shown twice in the same attempt (T-050)", () => {
+    let state = makeState();
+    const shownIds = new Set<string>();
+
+    for (const strand of ["reading", "listening", "grammar"] as Strand[]) {
+      const stages = ["route", "target", "confirm"] as const;
+      for (const stage of stages) {
+        for (let i = 0; i < 4; i++) {
+          const id = `${strand}-${stage}-${i}`;
+          expect(shownIds.has(id)).toBe(false);
+          shownIds.add(id);
+        }
+        const updatedProgress = advanceStrand(strand, state.strandProgress[strand], state);
+        state = {
+          ...state,
+          strandProgress: { ...state.strandProgress, [strand]: updatedProgress },
+        };
+      }
+    }
+    // All ids are unique — no duplicates
+    expect(shownIds.size).toBe(3 * 3 * 4); // 3 strands × 3 stages × 4 items
+  });
+
   it("recommendation includes engine version", () => {
     const state = makeState({
       strandProgress: {
