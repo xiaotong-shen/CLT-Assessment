@@ -2,23 +2,27 @@
  * Stateless demo endpoint — no DB writes.
  *
  * POST /api/demo/next
- * Body: { state: AttemptState, response?: { itemId, correct, timeMs, stage, strand, level } }
- * Returns: { item, stage, strand, state } | { done: true, recommendation }
- *
- * The caller owns all state. This endpoint only:
- *  1. Applies the response to the state (if provided)
- *  2. Runs decide() to get the next decision
- *  3. Fetches one matching item from the DB (read-only)
- *  4. Returns the item + updated state
+ * Body: { state: AttemptState, response?: {...}, strandFilter?: Strand }
+ * Returns: { item, stage, strand, state, explain } | { done: true, recommendation, explain }
  */
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { items } from "../../../../../db/schema";
-import { decide, advanceStrand, initialStrandProgress } from "@/engine/msat";
+import {
+  decide,
+  advanceStrand,
+  explainDecision,
+} from "@/engine/msat";
 import { ClientItemSchema } from "@/server/schemas/items";
-import type { AttemptState, Level, Response, Stage, Strand } from "@/engine/types";
+import type {
+  AttemptState,
+  Level,
+  Response,
+  Stage,
+  Strand,
+} from "@/engine/types";
 
 const ResponseSchema = z.object({
   itemId: z.string(),
@@ -32,6 +36,9 @@ const ResponseSchema = z.object({
 const BodySchema = z.object({
   state: z.custom<AttemptState>(),
   response: ResponseSchema.optional(),
+  strandFilter: z
+    .enum(["reading", "listening", "grammar", "writing"])
+    .optional(),
 });
 
 export async function POST(req: Request) {
@@ -72,19 +79,27 @@ export async function POST(req: Request) {
       updatedProgress = { ...updatedProgress, [incoming.strand]: newProgress };
     }
 
-    state = { ...state, responses: updatedResponses, strandProgress: updatedProgress };
+    state = {
+      ...state,
+      responses: updatedResponses,
+      strandProgress: updatedProgress,
+    };
   }
 
   const decision = decide(state, Date.now());
+  const explain = explainDecision(state, decision);
 
   if (decision.kind === "done") {
-    return NextResponse.json({ done: true, recommendation: decision.recommendation });
+    return NextResponse.json({
+      done: true,
+      recommendation: decision.recommendation,
+      explain,
+    });
   }
 
   const { constraints, stage, strand } = decision;
   const alreadyShown = state.responses.map((r) => r.itemId);
 
-  // Fetch candidates from DB (read-only)
   const candidates = await db
     .select()
     .from(items)
@@ -97,7 +112,10 @@ export async function POST(req: Request) {
   );
 
   if (filtered.length === 0) {
-    return NextResponse.json({ error: "No items available for this stage" }, { status: 500 });
+    return NextResponse.json(
+      { error: `No live items available for ${strand} at levels [${constraints.levels.join(",")}]` },
+      { status: 500 }
+    );
   }
 
   const picked = filtered.sort((a, b) => a.nAttempts - b.nAttempts)[0]!;
@@ -118,5 +136,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Item schema error" }, { status: 500 });
   }
 
-  return NextResponse.json({ item: clientParsed.data, stage, strand, state });
+  return NextResponse.json({
+    item: clientParsed.data,
+    stage,
+    strand,
+    state,
+    explain,
+  });
 }

@@ -2,6 +2,7 @@
 import { signIn } from "next-auth/react";
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 const IS_DEV = process.env.NODE_ENV !== "production";
 
@@ -91,12 +92,12 @@ export default function StaffLoginPage() {
             >
               {bypassLoading ? "Signing in…" : "🔓 Sign in as Dev Admin"}
             </button>
-            <a
-              href="/en/intake"
+            <Link
+              href="/en/demo"
               className="block w-full text-center bg-green-50 hover:bg-green-100 text-green-800 rounded-lg py-2 text-sm font-medium border border-green-300"
             >
               🧑‍🎓 Try assessment as student
-            </a>
+            </Link>
             <p className="text-xs text-gray-400 pt-1">
               Admin: <span className="font-mono">admin@school.ca</span> / <span className="font-mono">123</span>
             </p>

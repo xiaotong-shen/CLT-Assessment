@@ -291,6 +291,91 @@ function buildReasoning(
   return lines;
 }
 
+// ---------------------------------------------------------------------------
+// Decision explanation (for debug/visualization)
+// ---------------------------------------------------------------------------
+
+export interface DecisionExplain {
+  /** Plain-English description of what the engine just did. */
+  rule: string;
+  /** Numeric inputs the rule consumed (e.g. accuracy, slot index). */
+  inputs: Record<string, number | string | null>;
+  /** What the engine produced (next levels, estimated level, etc.). */
+  output: Record<string, number | string | null | Level[]>;
+}
+
+/**
+ * Returns a structured, human-friendly explanation of the most recent decision.
+ * Pure inspector — no behavior change, safe to call from UI.
+ */
+export function explainDecision(
+  state: AttemptState,
+  decision: Decision
+): DecisionExplain {
+  if (decision.kind === "done") {
+    return {
+      rule: "All four strands have completed Route → Target → Confirm. Engine produced final placement.",
+      inputs: { totalResponses: state.responses.length },
+      output: {
+        course: decision.recommendation.course,
+        stream: decision.recommendation.stream,
+      },
+    };
+  }
+
+  const { strand, stage, constraints } = decision;
+  const progress = state.strandProgress[strand];
+  const stageResponses = responsesForStrandAndStage(state, strand, stage);
+  const slot = stageResponses.length + 1;
+  const total = ITEMS_PER_STAGE[stage];
+
+  if (stage === "route") {
+    const correct = stageResponses.filter((r) => r.correct).length;
+    const acc = stageResponses.length
+      ? correct / stageResponses.length
+      : null;
+    return {
+      rule: `Route stage — pick a mid-difficulty item (levels 2–4) to gauge starting ability. After 4 items, accuracy decides the target track: ≥75% → hard track [4,5], ≤25% → easy track [1,2], else mid track [2,3,4].`,
+      inputs: {
+        strand,
+        slot: `${slot}/${total}`,
+        currentRouteAccuracy: acc !== null ? Math.round(acc * 100) / 100 : null,
+        correctSoFar: correct,
+      },
+      output: {
+        nextLevels: constraints.levels,
+      },
+    };
+  }
+
+  if (stage === "target") {
+    return {
+      rule: `Target stage — present 4 items at the chosen track to estimate the student's level. The engine looks for the highest level d where accuracy at-or-below d ≥ 70% AND accuracy at d+1 < 50%.`,
+      inputs: {
+        strand,
+        slot: `${slot}/${total}`,
+        trackLevels: progress.trackLevels.join(","),
+      },
+      output: {
+        nextLevels: constraints.levels,
+      },
+    };
+  }
+
+  // confirm
+  return {
+    rule: `Confirm stage — present 2 items at level (estimate-1) and 2 at (estimate+1). Bumps up if upper ≥50% AND lower 100%; bumps down if lower <100%; otherwise holds at estimate (and flags ambiguous).`,
+    inputs: {
+      strand,
+      slot: `${slot}/${total}`,
+      currentEstimate: progress.estimatedLevel,
+    },
+    output: {
+      nextLevels: constraints.levels,
+    },
+  };
+}
+
 /**
  * Initialize blank strand progress for a new attempt.
  */
