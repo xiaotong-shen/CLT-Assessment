@@ -2,6 +2,7 @@
  * Creates the first admin user.
  * Run once: pnpm seed:admin
  */
+import "./load-env"; // loads .env.local before anything else
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";

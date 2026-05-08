@@ -2,6 +2,7 @@
  * Seed script — run with: pnpm db:seed
  * Idempotent: re-running updates existing items by id, does not duplicate.
  */
+import "../../scripts/load-env"; // loads .env.local before anything else
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";

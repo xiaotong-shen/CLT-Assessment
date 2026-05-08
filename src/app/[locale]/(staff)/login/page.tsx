@@ -77,11 +77,11 @@ export default function StaffLoginPage() {
           </button>
         </form>
 
-        {/* Dev-only sign-in bypass — never rendered in production */}
+        {/* Dev-only shortcuts — never rendered in production */}
         {IS_DEV && (
-          <div className="mt-6 pt-6 border-t border-dashed border-amber-300">
-            <p className="text-xs font-mono text-amber-700 mb-2">
-              ⚠ DEV MODE — bypass disabled in production builds
+          <div className="mt-6 pt-6 border-t border-dashed border-amber-300 space-y-2">
+            <p className="text-xs font-mono text-amber-700 mb-3">
+              ⚠ DEV MODE — these buttons are hidden in production
             </p>
             <button
               type="button"
@@ -91,8 +91,14 @@ export default function StaffLoginPage() {
             >
               {bypassLoading ? "Signing in…" : "🔓 Sign in as Dev Admin"}
             </button>
-            <p className="text-xs text-gray-400 mt-2">
-              Auto-provisions a <span className="font-mono">dev@local</span> admin user.
+            <a
+              href="/en/intake"
+              className="block w-full text-center bg-green-50 hover:bg-green-100 text-green-800 rounded-lg py-2 text-sm font-medium border border-green-300"
+            >
+              🧑‍🎓 Try assessment as student
+            </a>
+            <p className="text-xs text-gray-400 pt-1">
+              Admin: <span className="font-mono">admin@school.ca</span> / <span className="font-mono">123</span>
             </p>
           </div>
         )}
