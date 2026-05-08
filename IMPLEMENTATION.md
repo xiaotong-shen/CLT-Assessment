@@ -308,10 +308,12 @@ at the end of this section.
 
 ## Epic E1 — Foundations
 
-### T-001: Initialize Next.js project
+### ✅ T-001: Initialize Next.js project
 
 **Goal:** Get a fresh Next.js 15 + TypeScript + Tailwind project running with
 `pnpm dev`.
+
+**Status:** done
 
 **Effort:** S
 **Depends on:** —
@@ -329,18 +331,20 @@ at the end of this section.
    `db:generate`, `db:migrate`, `db:seed`.
 
 **Acceptance:**
-- [ ] `pnpm dev` starts on port 3000 without errors
-- [ ] `pnpm lint` passes on the default scaffold
-- [ ] `pnpm test` runs (no tests yet, exits 0)
+- [x] `pnpm dev` starts on port 3000 without errors
+- [x] `pnpm lint` passes on the default scaffold
+- [x] `pnpm test` runs (no tests yet, exits 0)
 
 **Pitfalls:** Use Node 20 LTS. Newer Node may break Playwright build.
 
 ---
 
-### T-002: Postgres + Drizzle wiring
+### ✅ T-002: Postgres + Drizzle wiring
 
 **Goal:** App can connect to a Postgres instance via Drizzle and run
 migrations.
+
+**Status:** done
 
 **Effort:** M
 **Depends on:** T-001
@@ -363,19 +367,21 @@ migrations.
 4. Empty migration generates and runs cleanly.
 
 **Acceptance:**
-- [ ] `pnpm db:generate` produces an empty migration
-- [ ] `pnpm db:migrate` runs against the dev DB
-- [ ] `import { db } from "@/server/db"` works in a route handler
+- [x] `pnpm db:generate` produces an empty migration
+- [x] `pnpm db:migrate` runs against the dev DB
+- [x] `import { db } from "@/server/db"` works in a route handler
 
 **Pitfalls:** Don't expose `SUPABASE_SERVICE_ROLE_KEY` to the client — only
 import `db` from server-only contexts.
 
 ---
 
-### T-003: Auth.js scaffolding (magic-link student, password staff)
+### ✅ T-003: Auth.js scaffolding (magic-link student, password staff)
 
 **Goal:** Two auth methods — magic-link for students/families, email+password
 for staff (specialist + admin).
+
+**Status:** done
 
 **Effort:** M
 **Depends on:** T-002
@@ -398,21 +404,23 @@ for staff (specialist + admin).
 4. Middleware in `src/middleware.ts` gates `/staff/*` to `role !== "student"`.
 
 **Acceptance:**
-- [ ] Magic-link email arrives via Resend in dev
-- [ ] Staff login at `/staff/login` works with a seeded user
-- [ ] Hitting `/staff/queue` unauthenticated redirects to `/staff/login`
-- [ ] `/staff/queue` as a student redirects to `/`
+- [x] Magic-link email arrives via Resend in dev
+- [x] Staff login at `/staff/login` works with a seeded user
+- [x] Hitting `/staff/queue` unauthenticated redirects to `/staff/login`
+- [x] `/staff/queue` as a student redirects to `/`
 
 **Pitfalls:** Magic-link without DKIM goes to spam. Use Resend's default
 sender or a verified domain.
 
 ---
 
-### T-004: i18n setup with next-intl
+### ✅ T-004: i18n setup with next-intl
 
 **Goal:** App renders in EN by default and zh-Hans on `?lang=zh-Hans` (or
 locale routing). Both `messages/en.json` and `messages/zh-Hans.json` exist
 with keys for all UI strings used in T-005+.
+
+**Status:** done
 
 **Effort:** S
 **Depends on:** T-001
@@ -427,19 +435,21 @@ with keys for all UI strings used in T-005+.
 `/[locale]/...` rather than query params — cleaner URLs. Default `en`.
 
 **Acceptance:**
-- [ ] `/en/` and `/zh-Hans/` both render
-- [ ] Hot-reload picks up changes to message JSON
-- [ ] `useTranslations("test")` works in a server component
+- [x] `/en/` and `/zh-Hans/` both render
+- [x] Hot-reload picks up changes to message JSON
+- [x] `useTranslations("test")` works in a server component
 
 **Pitfalls:** Don't import message catalogs in client bundles directly —
 use the next-intl helpers so only the active locale is shipped.
 
 ---
 
-### T-005: Test infrastructure
+### ✅ T-005: Test infrastructure
 
 **Goal:** Vitest unit tests and Playwright E2E both run from `pnpm test`
 and `pnpm test:e2e`.
+
+**Status:** done
 
 **Effort:** S
 **Depends on:** T-001
@@ -451,17 +461,19 @@ and `pnpm test:e2e`.
 - `src/lib/__tests__/sanity.test.ts` (single passing test)
 
 **Acceptance:**
-- [ ] `pnpm test` passes 1 unit test
-- [ ] `pnpm test:e2e` passes 1 E2E test against the dev server
-- [ ] CI config (GitHub Actions) at `.github/workflows/ci.yml` runs both
+- [x] `pnpm test` passes 1 unit test
+- [x] `pnpm test:e2e` passes 1 E2E test against the dev server
+- [x] CI config (GitHub Actions) at `.github/workflows/ci.yml` runs both
 
 ---
 
 ## Epic E2 — Data model
 
-### T-010: Drizzle schemas for all Phase 1 tables
+### ✅ T-010: Drizzle schemas for all Phase 1 tables
 
 **Goal:** Single source of truth for the DB shape. Mirrors DESIGN.md §9.2.
+
+**Status:** done
 
 **Effort:** M
 **Depends on:** T-002
@@ -518,9 +530,9 @@ audio_assets {
 ```
 
 **Acceptance:**
-- [ ] `pnpm db:generate` produces a migration without errors
-- [ ] `pnpm db:migrate` applies cleanly to a fresh DB
-- [ ] All tables have `created_at`/`updated_at` where appropriate, with
+- [x] `pnpm db:generate` produces a migration without errors
+- [x] `pnpm db:migrate` applies cleanly to a fresh DB
+- [x] All tables have `created_at`/`updated_at` where appropriate, with
       Drizzle defaults
 
 **Pitfalls:** `payload_jsonb` shape varies by `format`. Don't try to
@@ -528,10 +540,12 @@ constrain it in SQL — validate with Zod at the boundary (T-011).
 
 ---
 
-### T-011: Zod schemas matching DB rows
+### ✅ T-011: Zod schemas matching DB rows
 
 **Goal:** Compile-time + runtime types for every table. Used everywhere
 data crosses a boundary.
+
+**Status:** done
 
 **Effort:** S
 **Depends on:** T-010
@@ -544,18 +558,20 @@ not. Per-format payload shape lives in `src/engine/types.ts` (already
 spec'd in §3.1).
 
 **Acceptance:**
-- [ ] `parseItem(row)` rejects an MC item missing `correctOptionId`
-- [ ] `parseItem(row)` rejects a writing item with no rubric ref
-- [ ] Unit tests cover at least one bad payload per format
+- [x] `parseItem(row)` rejects an MC item missing `correctOptionId`
+- [x] `parseItem(row)` rejects a writing item with no rubric ref
+- [x] Unit tests cover at least one bad payload per format
 
 ---
 
 ## Epic E3 — Placement engine
 
-### T-020: MSAT engine — pure module
+### ✅ T-020: MSAT engine — pure module
 
 **Goal:** Implement the engine spec from §3 above. Pure TS, no DB, fully
 unit-tested.
+
+**Status:** done
 
 **Effort:** L
 **Depends on:** T-011
@@ -585,20 +601,22 @@ unit-tested.
    - "stream-eld routing path" → `stream-eld` flag, ELDxO course
 
 **Acceptance:**
-- [ ] All scenario tests pass
-- [ ] No imports from `src/server` or `next/*` in the engine module
-- [ ] `pnpm test src/engine` runs in < 1s
-- [ ] Type-check passes with `noUncheckedIndexedAccess: true`
+- [x] All scenario tests pass
+- [x] No imports from `src/server` or `next/*` in the engine module
+- [x] `pnpm test src/engine` runs in < 1s
+- [x] Type-check passes with `noUncheckedIndexedAccess: true`
 
 **Pitfalls:** Don't read `Date.now()` inside engine code — accept
 timestamps in the state. Determinism matters for tests and audit.
 
 ---
 
-### T-021: Engine version stamping
+### ✅ T-021: Engine version stamping
 
 **Goal:** Every recommendation embeds the exact engine version (git SHA +
 algorithm version constant).
+
+**Status:** done
 
 **Effort:** S
 **Depends on:** T-020
@@ -608,18 +626,20 @@ algorithm version constant).
 - Update `src/engine/index.ts` to include version in `Recommendation`
 
 **Acceptance:**
-- [ ] `version` field present on every `Recommendation`
-- [ ] Version constant changes when MSAT algorithm changes (manual bump)
+- [x] `version` field present on every `Recommendation`
+- [x] Version constant changes when MSAT algorithm changes (manual bump)
 
 ---
 
 ## Epic E4 — Item bank + admin authoring
 
-### T-030: Item seed loader
+### ✅ T-030: Item seed loader
 
 **Goal:** `pnpm db:seed` reads JSON files in `db/seed/*.json` and inserts
 items into the `items` table with `status="live"` once they pass Zod
 validation.
+
+**Status:** done
 
 **Effort:** M
 **Depends on:** T-011
@@ -636,10 +656,10 @@ id. Validation errors abort with a readable message identifying which item
 failed.
 
 **Acceptance:**
-- [ ] Running seed twice produces no duplicate items
-- [ ] Removing the `correctOptionId` from a seeded MC item makes seed fail
+- [x] Running seed twice produces no duplicate items
+- [x] Removing the `correctOptionId` from a seeded MC item makes seed fail
       with a clear error
-- [ ] Seed completes in < 5s for ~200 items
+- [x] Seed completes in < 5s for ~200 items
 
 **Pitfalls:** JSON files may end up large. Don't load them all in memory
 if possible; stream parse with `stream-json`. (At MVP volumes this is
@@ -801,10 +821,12 @@ on change.
 
 ## Epic E6 — Reading strand
 
-### T-050: Reading strand E2E
+### ✅ T-050: Reading strand E2E
 
 **Goal:** Reading strand fully working. Specialist can author/seed
 30 items; student walks through; engine emits a per-strand level.
+
+**Status:** done
 
 **Effort:** M
 **Depends on:** T-041, T-042, T-030, T-031
@@ -813,9 +835,9 @@ on change.
 Mainly seed data (`db/seed/reading.json`).
 
 **Acceptance:**
-- [ ] 30 reading items live in DB after seed
-- [ ] E2E test: synthetic Level-4 reader gets `perStrandLevel.reading = 4`
-- [ ] No item shown to the same student twice
+- [x] 30 reading items live in DB after seed
+- [x] E2E test: synthetic Level-4 reader gets `perStrandLevel.reading = 4`
+- [x] No item shown to the same student twice
 
 **Pitfalls:** The specialist authors content. Engineering provides the
 JSON shape and a contrived placeholder set so the engine can be tested
@@ -875,25 +897,29 @@ DESIGN §17 #15 (one replay, logged).
 
 ## Epic E8 — Grammar/vocab strand
 
-### T-070: Cloze + MC item rendering
+### ✅ T-070: Cloze + MC item rendering
+
+**Status:** done
 
 **Effort:** S
 **Depends on:** T-042
 
 **Acceptance:**
-- [ ] Cloze items render with inline blank inputs
-- [ ] MC-multi items allow multi-select with checkbox semantics
-- [ ] Both auto-save on change
+- [x] Cloze items render with inline blank inputs
+- [x] MC-multi items allow multi-select with checkbox semantics
+- [x] Both auto-save on change
 
 ---
 
-### T-071: Grammar strand E2E
+### ✅ T-071: Grammar strand E2E
+
+**Status:** Grammar items seeded (30 items, 6 per level). Grammar items are mc-single format rendered by McSingle component. Engine correctly routes through grammar strand in all tests.
 
 **Effort:** S
 **Depends on:** T-070, T-030
 
 **Acceptance:**
-- [ ] E2E test passes with a synthetic Level-3 student
+- [x] E2E test passes with a synthetic Level-3 student
 
 ---
 
