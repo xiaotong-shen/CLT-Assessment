@@ -2,7 +2,9 @@
 /**
  * Demo / sandbox mode — runs the full assessment engine in the browser.
  * Zero database writes. State lives in React useState only.
- * Accessible at /en/demo (dev only — redirect to home in production).
+ *
+ * Visual style: Claude-aligned muted/beige, locked light theme,
+ * larger reading-friendly typography.
  */
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocale } from "next-intl";
@@ -22,11 +24,39 @@ import { Cloze } from "@/components/items/Cloze";
 import { ListeningMc } from "@/components/items/ListeningMc";
 import { Writing } from "@/components/items/Writing";
 import { RoutingTree } from "./RoutingTree";
+import { ReportContent } from "@/app/[locale]/(staff)/attempt/[id]/report/ReportContent";
 
 // Redirect non-dev users
 if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   window.location.replace("/");
 }
+
+// ---------------------------------------------------------------------------
+// Palette
+// ---------------------------------------------------------------------------
+const C = {
+  page: "#F5F4ED", // warm cream
+  card: "#FFFFFF",
+  cardSoft: "#FAF9F5",
+  border: "#E8E4D8",
+  borderStrong: "#D6D2C4",
+  text: "#1A1916",
+  textMuted: "#6B6759",
+  textDim: "#8E8A7A",
+  accent: "#C15F3C",
+  accentHover: "#A04E2E",
+  accentSoft: "#F4E8DD",
+  accentBorder: "#E0C6B3",
+  successSoft: "#E5EDDF",
+  successText: "#5A7546",
+  successBorder: "#C7D5BC",
+  errorSoft: "#F4DFD7",
+  errorText: "#A65541",
+  errorBorder: "#E5C2B4",
+  warningSoft: "#F5E9CB",
+  warningText: "#8A6D2C",
+  warningBorder: "#E0CE9D",
+};
 
 // ---------------------------------------------------------------------------
 // Types
@@ -63,7 +93,6 @@ type StrandFilter = Strand | "all";
 function makeInitialState(filter: StrandFilter): AttemptState {
   const baseProgress = initialStrandProgress();
 
-  // If a single strand is chosen, mark all others as already complete.
   let strandProgress = baseProgress;
   if (filter !== "all") {
     const otherDefaults: StrandProgress = {
@@ -103,59 +132,64 @@ function formatTime(secs: number): string {
 // Strand picker
 // ---------------------------------------------------------------------------
 
-function StrandPicker({ onPick }: { onPick: (f: StrandFilter) => void }) {
+function StrandPicker({ onPick, onSkip }: { onPick: (f: StrandFilter) => void; onSkip: () => void }) {
   const options: {
     key: StrandFilter;
     title: string;
     desc: string;
     badge?: string;
-    color: string;
+    primary?: boolean;
   }[] = [
     {
       key: "all",
       title: "Full assessment",
-      desc: "All four strands: reading → listening → grammar → writing",
-      color: "border-indigo-300 bg-indigo-50 hover:bg-indigo-100 text-indigo-900",
+      desc: "All four strands: reading, listening, grammar, and writing.",
+      primary: true,
     },
     {
       key: "reading",
       title: "Reading only",
-      desc: "Comprehension passages & multiple-choice",
-      color: "border-blue-300 bg-blue-50 hover:bg-blue-100 text-blue-900",
+      desc: "Comprehension passages and multiple-choice questions.",
     },
     {
       key: "grammar",
       title: "Grammar only",
-      desc: "Cloze + grammar multiple-choice",
-      color: "border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-900",
+      desc: "Cloze and grammar multiple-choice items.",
     },
     {
       key: "writing",
       title: "Writing only",
-      desc: "Free-response prompts (auto-advances in demo)",
-      color: "border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-900",
+      desc: "Free-response prompts (auto-advance in demo mode).",
     },
     {
       key: "listening",
       title: "Listening only",
-      desc: "Audio comprehension",
-      badge: "🚧 Under construction",
-      color: "border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900",
+      desc: "Audio comprehension items.",
+      badge: "Under construction",
     },
   ];
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow p-8">
-        <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-xs font-mono px-3 py-1 rounded-full mb-4">
-          🧪 DEMO — no data saved
+    <main
+      className="min-h-screen flex items-center justify-center p-6"
+      style={{ background: C.page, color: C.text, colorScheme: "light" }}
+    >
+      <div
+        className="w-full max-w-3xl rounded-2xl border p-10"
+        style={{ background: C.card, borderColor: C.border }}
+      >
+        <div
+          className="inline-flex items-center gap-2 text-xs font-mono px-3 py-1 rounded-full mb-6"
+          style={{ background: C.accentSoft, color: C.accent, border: `1px solid ${C.accentBorder}` }}
+        >
+          DEMO · no data saved
         </div>
-        <h1 className="text-xl font-semibold text-gray-900">
-          Pick what to test
+        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: C.text }}>
+          What would you like to test?
         </h1>
-        <p className="text-sm text-gray-500 mt-1 mb-6">
-          The routing tree on the right will visualize how the engine places
-          the student as questions are answered.
+        <p className="text-base mt-3 mb-8 leading-relaxed" style={{ color: C.textMuted, maxWidth: "44ch" }}>
+          Pick a strand and the routing tree on the right will visualize how
+          the engine places the student as questions are answered.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -163,17 +197,69 @@ function StrandPicker({ onPick }: { onPick: (f: StrandFilter) => void }) {
             <button
               key={opt.key}
               onClick={() => onPick(opt.key)}
-              className={`text-left rounded-lg border-2 p-4 transition ${opt.color}`}
+              className="text-left rounded-xl border p-5 transition focus:outline-none focus-visible:ring-2"
+              style={{
+                background: opt.primary ? C.accentSoft : C.cardSoft,
+                borderColor: opt.primary ? C.accentBorder : C.border,
+                color: C.text,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = opt.primary ? C.accent : C.borderStrong;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = opt.primary ? C.accentBorder : C.border;
+              }}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-sm">{opt.title}</span>
+                <span className="font-semibold text-base">{opt.title}</span>
                 {opt.badge && (
-                  <span className="text-[10px] font-mono">{opt.badge}</span>
+                  <span
+                    className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded"
+                    style={{
+                      background: C.warningSoft,
+                      color: C.warningText,
+                      letterSpacing: "0.08em",
+                    }}
+                  >
+                    {opt.badge}
+                  </span>
                 )}
               </div>
-              <p className="text-xs mt-1 opacity-80">{opt.desc}</p>
+              <p className="text-sm mt-1.5 leading-relaxed" style={{ color: C.textMuted }}>
+                {opt.desc}
+              </p>
             </button>
           ))}
+        </div>
+
+        {/* Dev shortcut — skip to results */}
+        <div
+          className="mt-6 pt-5 border-t flex items-center justify-between"
+          style={{ borderColor: C.border }}
+        >
+          <div>
+            <p className="text-sm font-medium" style={{ color: C.textMuted }}>Dev shortcut</p>
+            <p className="text-xs mt-0.5" style={{ color: C.textDim }}>
+              Skip the assessment entirely — generate random responses and jump to the placement result.
+            </p>
+          </div>
+          <button
+            onClick={onSkip}
+            className="shrink-0 text-sm font-medium px-4 py-2 rounded-lg border transition focus:outline-none focus-visible:ring-2"
+            style={{
+              color: C.accent,
+              borderColor: C.accentBorder,
+              background: C.card,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = C.accentSoft;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = C.card;
+            }}
+          >
+            Skip to results →
+          </button>
         </div>
       </div>
     </main>
@@ -203,7 +289,7 @@ export default function DemoPage() {
   const itemStartMs = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Timer — reset itemStartMs on each new item; interval drives elapsed updates
+  // Timer
   useEffect(() => {
     if (!current || loading) return;
     itemStartMs.current = Date.now();
@@ -268,7 +354,6 @@ export default function DemoPage() {
     []
   );
 
-  // Start the demo when a strand is picked
   function start(filter: StrandFilter) {
     const initial = makeInitialState(filter);
     setStrandFilter(filter);
@@ -277,6 +362,38 @@ export default function DemoPage() {
     setLastExplain(null);
     setLastCorrect(null);
     fetchNext(initial);
+  }
+
+  const [downloading, setDownloading] = useState(false);
+
+  async function downloadPdf() {
+    if (!recommendation || downloading) return;
+    setDownloading(true);
+    try {
+      const res = await fetch("/api/demo/report.pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recommendation,
+          studentName: "Demo Student",
+          assessmentDate: new Date().toISOString(),
+        }),
+      });
+      if (!res.ok) throw new Error("PDF generation failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "placement-report-demo-student.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Could not generate the PDF. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
   }
 
   function restart() {
@@ -294,8 +411,6 @@ export default function DemoPage() {
     setSubmitting(true);
     const timeMs = Date.now() - itemStartMs.current;
 
-    // Send the raw response — the server has the full item payload (including
-    // correctOptionId, which is stripped from the client schema) and scores it.
     const responsePayload = {
       itemId: current.item.id,
       raw: response,
@@ -309,57 +424,89 @@ export default function DemoPage() {
     await fetchNext(state, responsePayload);
   }
 
-  // ── Strand picker (initial state) ──────────────────────────────────────────
-  if (strandFilter === null) {
-    return <StrandPicker onPick={start} />;
+  async function skipToResults() {
+    setLoading(true);
+    setError(null);
+    setStrandFilter("all");
+    try {
+      const res = await fetch("/api/demo/skip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accuracy: 0.6 }),
+      });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        setError(errBody.error || "Failed to generate results.");
+        return;
+      }
+      const data = await res.json();
+      if (data.done) {
+        setState(data.state);
+        setRecommendation(data.recommendation);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  // ── Done screen ────────────────────────────────────────────────────────────
+  // ── Strand picker ──────────────────────────────────────────────────────────
+  if (strandFilter === null) {
+    return <StrandPicker onPick={start} onSkip={skipToResults} />;
+  }
+
+  // ── Done screen — real print-ready report (reuses the staff ReportContent) ───
   if (recommendation) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white rounded-xl shadow p-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-xs font-mono px-3 py-1 rounded-full">
-            🧪 DEMO — not saved
+      <main
+        className="min-h-screen p-6 print:bg-white print:p-0"
+        style={{ background: C.page, colorScheme: "light" }}
+      >
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* Demo controls — hidden on print/PDF */}
+          <div className="flex items-center gap-3 print:hidden">
+            <span
+              className="text-xs font-mono px-2.5 py-1 rounded"
+              style={{ background: C.accentSoft, color: C.accent, border: `1px solid ${C.accentBorder}` }}
+            >
+              DEMO · not saved
+            </span>
+            <button
+              onClick={restart}
+              className="ml-auto text-sm underline transition"
+              style={{ color: C.textMuted }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}
+            >
+              Restart demo
+            </button>
+            <button
+              onClick={downloadPdf}
+              disabled={downloading}
+              className="text-sm font-medium px-4 py-2 rounded-lg text-white transition disabled:opacity-60"
+              style={{ background: "#2563EB" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#1D4ED8")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#2563EB")}
+            >
+              {downloading ? "Generating…" : "⬇ Download PDF"}
+            </button>
           </div>
-          <p className="text-xs text-gray-400 uppercase tracking-widest">
-            Placement Result
-          </p>
-          <p className="text-5xl font-bold text-indigo-700">
-            {recommendation.course}
-          </p>
-          <p className="text-sm text-gray-500">Stream: {recommendation.stream}</p>
-          <div className="text-left text-xs text-gray-500 bg-gray-50 rounded-lg p-3 space-y-1">
-            {Object.entries(recommendation.perStrandLevel).map(
-              ([strand, level]) => (
-                <div key={strand} className="flex justify-between">
-                  <span className="capitalize">{strand}</span>
-                  <span className="font-medium text-gray-700">Level {level}</span>
-                </div>
-              )
-            )}
-          </div>
-          {recommendation.flags.length > 0 && (
-            <div className="text-left text-xs text-amber-700 bg-amber-50 rounded-lg p-3 space-y-1">
-              {recommendation.flags.map((f) => (
-                <p key={f.code}>
-                  ⚑ {f.code}: {f.detail}
-                </p>
-              ))}
-            </div>
-          )}
-          <button
-            onClick={restart}
-            className="w-full mt-2 bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700"
-          >
-            Restart demo
-          </button>
-          <a
-            href={`/${locale}/login`}
-            className="block text-xs text-gray-400 hover:text-gray-600 underline"
-          >
-            ← Back to login
-          </a>
+
+          <ReportContent
+            attemptId="demo"
+            rec={recommendation}
+            studentName="Demo Student"
+            assessmentDate={new Date()}
+            locale={locale}
+            demo
+          />
+
+          <footer className="text-center text-xs pb-8 print:pb-4" style={{ color: C.textDim }}>
+            <p>
+              Demo placement · Engine {recommendation.engineVersion} · CLT Assessment Platform
+            </p>
+          </footer>
         </div>
       </main>
     );
@@ -369,96 +516,146 @@ export default function DemoPage() {
   const overTime = estimated !== null && elapsed > estimated;
   const isListening = strandFilter === "listening" || current?.strand === "listening";
 
-  // ── Assessment screen — two-column layout ──────────────────────────────────
+  // ── Assessment screen ──────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-gray-50 p-4 lg:p-6">
+    <main
+      className="min-h-screen p-4 lg:p-8"
+      style={{ background: C.page, color: C.text, colorScheme: "light" }}
+    >
       {/* Top banner */}
-      <div className="max-w-7xl mx-auto mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono bg-amber-100 text-amber-800 px-2 py-1 rounded">
-            🧪 DEMO — no data saved
+      <div className="max-w-[1400px] mx-auto mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span
+            className="text-xs font-mono px-2.5 py-1 rounded"
+            style={{ background: C.accentSoft, color: C.accent, border: `1px solid ${C.accentBorder}` }}
+          >
+            DEMO · no data saved
           </span>
-          <span className="text-xs text-gray-500 capitalize hidden sm:inline">
-            · {strandFilter === "all" ? "full assessment" : `${strandFilter} only`}
+          <span className="text-sm capitalize hidden sm:inline" style={{ color: C.textMuted }}>
+            {strandFilter === "all" ? "full assessment" : `${strandFilter} only`}
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 text-sm">
           <button
             onClick={restart}
-            className="text-xs text-gray-500 hover:text-gray-800 underline"
+            className="underline transition"
+            style={{ color: C.textMuted }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}
           >
             Change strand
           </button>
           <a
             href={`/${locale}/login`}
-            className="text-xs text-gray-400 hover:text-gray-600 underline"
+            className="underline transition"
+            style={{ color: C.textDim }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = C.textDim)}
           >
-            ← Exit demo
+            Exit demo
           </a>
         </div>
       </div>
 
       {isListening && (
-        <div className="max-w-7xl mx-auto mb-3 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-900">
-          🚧 <span className="font-semibold">Listening pipeline under construction.</span>{" "}
+        <div
+          className="max-w-[1400px] mx-auto mb-5 rounded-lg px-4 py-3 text-sm leading-relaxed"
+          style={{ background: C.warningSoft, color: C.warningText, border: `1px solid ${C.warningBorder}` }}
+        >
+          <span className="font-semibold">Listening pipeline under construction.</span>{" "}
           Audio for these items has not been generated yet — the routing logic
-          works, but you may see items without playable audio. Use the on-screen
-          text fallback to answer.
+          works, but you may see items without playable audio. Use the
+          on-screen text fallback to answer.
         </div>
       )}
 
-      {/* Two-column grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-6">
+      {/* Two-column grid — wider main column */}
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px] gap-8">
         {/* LEFT — question card */}
         <div>
-          {/* Last-answer feedback */}
+          {/* Last-answer feedback pill */}
           {lastCorrect !== null && !loading && current && (
             <div
-              className={`mb-3 inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full ${
+              className="mb-4 inline-flex items-center gap-2 text-sm font-medium px-3.5 py-1.5 rounded-full"
+              style={
                 lastCorrect
-                  ? "bg-green-100 text-green-800 border border-green-200"
-                  : "bg-red-100 text-red-800 border border-red-200"
-              }`}
+                  ? {
+                      background: C.successSoft,
+                      color: C.successText,
+                      border: `1px solid ${C.successBorder}`,
+                    }
+                  : {
+                      background: C.errorSoft,
+                      color: C.errorText,
+                      border: `1px solid ${C.errorBorder}`,
+                    }
+              }
+              role="status"
+              aria-live="polite"
             >
               {lastCorrect ? "✓ Previous answer correct" : "✗ Previous answer wrong"}
             </div>
           )}
+
+          {/* Question metadata strip */}
           {current && !loading && (
-            <div className="mb-3 flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wide">
-              <span className="capitalize">{current.strand}</span>
-              <span>·</span>
+            <div
+              className="mb-4 flex items-center gap-2 text-xs uppercase tracking-wider"
+              style={{ color: C.textDim, letterSpacing: "0.1em" }}
+            >
+              <span className="capitalize" style={{ color: C.text }}>
+                {current.strand}
+              </span>
+              <span style={{ color: C.borderStrong }}>·</span>
               <span>{current.stage}</span>
-              <span>·</span>
+              <span style={{ color: C.borderStrong }}>·</span>
               <span>Level {current.item.level}</span>
-              <div className="ml-auto flex items-center gap-1.5">
+              <div className="ml-auto flex items-center gap-2 normal-case" style={{ letterSpacing: "0" }}>
                 {estimated && (
-                  <span className="text-gray-300 normal-case">
+                  <span style={{ color: C.textDim }}>
                     est. {formatTime(estimated)}
                   </span>
                 )}
                 <span
-                  className={`font-mono tabular-nums ${overTime ? "text-amber-500 font-semibold" : "text-gray-400"}`}
+                  className="font-mono tabular-nums"
+                  style={{
+                    color: overTime ? C.warningText : C.textMuted,
+                    fontWeight: overTime ? 600 : 400,
+                  }}
                 >
                   {formatTime(elapsed)}
                 </span>
-                {overTime && <span className="text-amber-400">⏱</span>}
               </div>
             </div>
           )}
 
-          <div className="bg-white rounded-xl shadow p-6 min-h-[320px]">
+          {/* Question card */}
+          <div
+            className="rounded-2xl border p-8 lg:p-10 min-h-[400px]"
+            style={{ background: C.card, borderColor: C.border }}
+          >
             {loading && (
-              <div className="flex items-center justify-center h-48">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <div className="flex items-center justify-center h-64">
+                <div
+                  className="w-8 h-8 border-2 rounded-full animate-spin"
+                  style={{
+                    borderColor: C.border,
+                    borderTopColor: C.accent,
+                  }}
+                />
               </div>
             )}
             {error && (
-              <div className="text-red-600 text-sm text-center py-8">
+              <div
+                className="text-center py-12 text-base"
+                style={{ color: C.errorText }}
+              >
                 {error}
                 <br />
                 <button
                   onClick={() => state && fetchNext(state)}
-                  className="mt-3 text-blue-600 underline text-xs"
+                  className="mt-4 underline text-sm"
+                  style={{ color: C.accent }}
                 >
                   Retry
                 </button>
@@ -476,7 +673,10 @@ export default function DemoPage() {
         </div>
 
         {/* RIGHT — routing tree */}
-        <aside className="bg-white rounded-xl shadow p-5 lg:sticky lg:top-4 lg:self-start max-h-[calc(100vh-2rem)] overflow-y-auto">
+        <aside
+          className="rounded-2xl border p-6 lg:sticky lg:top-6 lg:self-start max-h-[calc(100vh-3rem)] overflow-y-auto"
+          style={{ background: C.card, borderColor: C.border }}
+        >
           {state && (
             <RoutingTree
               state={state}
@@ -551,7 +751,7 @@ function ItemRenderer({
     );
 
   return (
-    <p className="text-red-500 text-sm">
+    <p style={{ color: "#A65541" }}>
       Unknown format: {(item as { format: string }).format}
     </p>
   );

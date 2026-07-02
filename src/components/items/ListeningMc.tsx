@@ -24,7 +24,7 @@ export function ListeningMc({ payload, onSubmit, disabled, getAudioUrl }: Props)
     : `/api/audio/${payload.audioAssetId}`;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 text-[#1A1916]">
       <audio
         src={audioSrc}
         controls
@@ -32,31 +32,53 @@ export function ListeningMc({ payload, onSubmit, disabled, getAudioUrl }: Props)
         className="w-full"
       />
       {!played && (
-        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+        <div
+          className="rounded-lg px-4 py-3 text-sm leading-relaxed"
+          style={{
+            background: "#F5E9CB",
+            color: "#8A6D2C",
+            border: "1px solid #E0CE9D",
+          }}
+        >
           Please listen to the audio before answering.
-        </p>
+        </div>
       )}
-      <p className="font-medium">{payload.stem}</p>
-      <div className="space-y-2">
-        {payload.options.map((opt) => (
-          <button
-            key={opt.id}
-            disabled={disabled}
-            onClick={() => setSelected(opt.id)}
-            className={`w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors ${
-              selected === opt.id
-                ? "border-blue-500 bg-blue-50 text-blue-900"
-                : "border-gray-200 hover:border-gray-400"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {opt.text}
-          </button>
-        ))}
+      <p className="text-lg font-medium leading-relaxed">{payload.stem}</p>
+      <div className="space-y-2.5" role="radiogroup" aria-label="Answer options">
+        {payload.options.map((opt) => {
+          const isSelected = selected === opt.id;
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              disabled={disabled}
+              onClick={() => setSelected(opt.id)}
+              className={`w-full text-left px-5 py-4 rounded-lg border text-base leading-relaxed transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C15F3C] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                isSelected
+                  ? "border-[#C15F3C] bg-[#F4E8DD] text-[#1A1916]"
+                  : "border-[#E8E4D8] bg-white hover:border-[#D6D2C4] hover:bg-[#FAF9F5]"
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className={`inline-block w-4 h-4 mr-3 rounded-full border-2 align-middle ${
+                  isSelected
+                    ? "border-[#C15F3C] bg-[#C15F3C] ring-2 ring-white ring-inset"
+                    : "border-[#D6D2C4]"
+                }`}
+              />
+              {opt.text}
+            </button>
+          );
+        })}
       </div>
       <button
+        type="button"
         disabled={!selected || disabled}
         onClick={() => selected && onSubmit({ optionId: selected })}
-        className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full bg-[#C15F3C] hover:bg-[#A04E2E] text-white rounded-lg py-3 text-base font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C15F3C] focus-visible:ring-offset-2"
       >
         Submit
       </button>

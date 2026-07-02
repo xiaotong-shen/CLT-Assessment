@@ -88,6 +88,12 @@ interface Props {
   assessmentDate: Date;
   essayGrading?: EssayGrading;
   locale: string;
+  /**
+   * Demo/PoC mode: hides staff-only navigation (Review link, Translate toggle,
+   * which depend on a persisted attempt) while keeping the Print / Save PDF
+   * button. Lets the stateless demo reuse this report as-is.
+   */
+  demo?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -101,6 +107,7 @@ export function ReportContent({
   assessmentDate,
   essayGrading,
   locale,
+  demo = false,
 }: Props) {
   const [translation, setTranslation] = useState<TranslationResult | null>(null);
   const isZh = !!translation;
@@ -114,25 +121,28 @@ export function ReportContent({
 
   return (
     <div className="space-y-6">
-      {/* Navigation (hidden on print) */}
-      <div className="flex items-center gap-3 print:hidden">
-        <a href=".." className="text-sm text-blue-600 hover:underline">
-          ← Review
-        </a>
-        <div className="ml-auto flex items-center gap-3">
-          <TranslateToggle
-            attemptId={attemptId}
-            onTranslated={setTranslation}
-            isTranslated={isZh}
-          />
-          <button
-            onClick={() => window.print()}
-            className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded shadow-sm"
-          >
-            {isZh ? "🖨 打印 / 存为 PDF" : "🖨 Print / Save PDF"}
-          </button>
+      {/* Navigation (hidden on print). In demo mode the caller supplies its own
+          controls + server-side PDF download, so this staff nav is hidden. */}
+      {!demo && (
+        <div className="flex items-center gap-3 print:hidden">
+          <a href=".." className="text-sm text-blue-600 hover:underline">
+            ← Review
+          </a>
+          <div className="ml-auto flex items-center gap-3">
+            <TranslateToggle
+              attemptId={attemptId}
+              onTranslated={setTranslation}
+              isTranslated={isZh}
+            />
+            <button
+              onClick={() => window.print()}
+              className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded shadow-sm"
+            >
+              {isZh ? "🖨 打印 / 存为 PDF" : "🖨 Print / Save PDF"}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Print-only school header */}
       <div className="hidden print:block border-b-2 border-gray-800 pb-3 mb-2">

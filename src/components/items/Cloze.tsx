@@ -23,8 +23,8 @@ export function Cloze({ payload, onSubmit, disabled }: Props) {
   const parts = payload.template.split(/(\{\{[^}]+\}\})/);
 
   return (
-    <div className="space-y-4">
-      <div className="text-sm leading-loose">
+    <div className="space-y-6 text-[#1A1916]">
+      <div className="text-base leading-loose whitespace-pre-wrap">
         {parts.map((part, i) => {
           const match = part.match(/^\{\{(.+)\}\}$/);
           if (match) {
@@ -40,7 +40,7 @@ export function Cloze({ payload, onSubmit, disabled }: Props) {
                 onChange={(e) =>
                   setAnswers((prev) => ({ ...prev, [id]: e.target.value }))
                 }
-                className="inline-block border-b-2 border-gray-400 focus:border-blue-500 outline-none text-center w-28 mx-1 px-1 py-0.5 text-sm disabled:opacity-50"
+                className="inline-block border-b-2 border-[#D6D2C4] focus:border-[#C15F3C] outline-none text-center w-28 mx-1 px-1 py-0.5 text-base disabled:opacity-50 bg-transparent transition-colors"
               />
             );
           }
@@ -50,7 +50,7 @@ export function Cloze({ payload, onSubmit, disabled }: Props) {
       <button
         disabled={!allFilled || disabled}
         onClick={() => onSubmit(answers)}
-        className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full bg-[#C15F3C] hover:bg-[#A04E2E] text-white rounded-lg py-3 text-base font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C15F3C] focus-visible:ring-offset-2"
       >
         Submit
       </button>
