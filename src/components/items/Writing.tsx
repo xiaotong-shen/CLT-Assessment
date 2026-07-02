@@ -72,8 +72,11 @@ export function Writing({ payload, onSubmit, disabled, locale = "en", draftKey }
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="bg-gray-50 border rounded-lg p-4 text-sm leading-relaxed text-gray-900">
+    <div className="space-y-5 text-[#1A1916]">
+      <div
+        className="rounded-lg border bg-[#FAF9F5] border-[#E8E4D8] p-5 text-base leading-relaxed whitespace-pre-wrap"
+        style={{ fontFamily: "ui-serif, Georgia, Cambria, serif" }}
+      >
         {promptText}
       </div>
       <textarea
@@ -81,10 +84,10 @@ export function Writing({ payload, onSubmit, disabled, locale = "en", draftKey }
         value={text}
         onChange={(e) => handleChange(e.target.value)}
         rows={8}
-        className="w-full border rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 resize-y"
+        className="w-full border border-[#E8E4D8] rounded-lg px-4 py-3 text-base text-[#1A1916] leading-relaxed bg-white focus:outline-none focus:ring-2 focus:ring-[#C15F3C] focus:border-[#C15F3C] disabled:opacity-50 resize-y transition-colors"
         placeholder={locale === "zh-Hans" ? "在这里输入您的回答…" : "Type your response here…"}
       />
-      <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="flex items-center justify-between text-xs" style={{ color: "#8E8A7A" }}>
         <span className="flex items-center gap-2">
           <span>
             {wordCount} {locale === "zh-Hans" ? "词" : "words"}
@@ -92,12 +95,12 @@ export function Writing({ payload, onSubmit, disabled, locale = "en", draftKey }
           </span>
           {/* Auto-save indicator */}
           {draftKey && savedIndicator && (
-            <span className="text-green-500">
+            <span style={{ color: "#5A7546" }}>
               {locale === "zh-Hans" ? "✓ 已保存草稿" : "✓ Draft saved"}
             </span>
           )}
           {draftKey && !savedIndicator && text.length > 0 && (
-            <span className="text-gray-300">
+            <span style={{ color: "#D6D2C4" }}>
               {locale === "zh-Hans" ? "自动保存已开启" : "Auto-save on"}
             </span>
           )}
@@ -111,7 +114,7 @@ export function Writing({ payload, onSubmit, disabled, locale = "en", draftKey }
       <button
         disabled={!ready || disabled}
         onClick={() => onSubmit({ text })}
-        className="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full bg-[#C15F3C] hover:bg-[#A04E2E] text-white rounded-lg py-3 text-base font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C15F3C] focus-visible:ring-offset-2"
       >
         {locale === "zh-Hans" ? "提交" : "Submit"}
       </button>

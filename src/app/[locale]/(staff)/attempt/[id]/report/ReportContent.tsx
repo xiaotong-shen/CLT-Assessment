@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { TranslateToggle } from "./TranslateToggle";
 import type { Recommendation, Flag, Strand } from "@/engine/types";
+import { levelBandLabel, candoDescription } from "@/lib/level-descriptions";
 
 // ---------------------------------------------------------------------------
 // Static label maps (client-side)
@@ -88,6 +89,14 @@ interface Props {
   assessmentDate: Date;
   essayGrading?: EssayGrading;
   locale: string;
+  /**
+   * Demo/PoC mode: hides staff-only navigation (Review link, Translate toggle,
+   * which depend on a persisted attempt) while keeping the Print / Save PDF
+   * button. Lets the stateless demo reuse this report as-is.
+   */
+  demo?: boolean;
+  /** Restrict the skills profile to these strands (others omitted). */
+  assessedStrands?: Strand[];
 }
 
 // ---------------------------------------------------------------------------
@@ -101,6 +110,8 @@ export function ReportContent({
   assessmentDate,
   essayGrading,
   locale,
+  demo = false,
+  assessedStrands,
 }: Props) {
   const [translation, setTranslation] = useState<TranslationResult | null>(null);
   const isZh = !!translation;
@@ -114,25 +125,28 @@ export function ReportContent({
 
   return (
     <div className="space-y-6">
-      {/* Navigation (hidden on print) */}
-      <div className="flex items-center gap-3 print:hidden">
-        <a href=".." className="text-sm text-blue-600 hover:underline">
-          ← Review
-        </a>
-        <div className="ml-auto flex items-center gap-3">
-          <TranslateToggle
-            attemptId={attemptId}
-            onTranslated={setTranslation}
-            isTranslated={isZh}
-          />
-          <button
-            onClick={() => window.print()}
-            className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded shadow-sm"
-          >
-            {isZh ? "🖨 打印 / 存为 PDF" : "🖨 Print / Save PDF"}
-          </button>
+      {/* Navigation (hidden on print). In demo mode the caller supplies its own
+          controls + server-side PDF download, so this staff nav is hidden. */}
+      {!demo && (
+        <div className="flex items-center gap-3 print:hidden">
+          <a href=".." className="text-sm text-blue-600 hover:underline">
+            ← Review
+          </a>
+          <div className="ml-auto flex items-center gap-3">
+            <TranslateToggle
+              attemptId={attemptId}
+              onTranslated={setTranslation}
+              isTranslated={isZh}
+            />
+            <button
+              onClick={() => window.print()}
+              className="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded shadow-sm"
+            >
+              {isZh ? "🖨 打印 / 存为 PDF" : "🖨 Print / Save PDF"}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Print-only school header */}
       <div className="hidden print:block border-b-2 border-gray-800 pb-3 mb-2">
@@ -170,8 +184,8 @@ export function ReportContent({
           </div>
         </div>
 
-        {/* Reasoning */}
-        {displayReasoning.length > 0 && (
+        {/* Reasoning (engine trace) — hidden in demo/plain-terms mode */}
+        {!demo && displayReasoning.length > 0 && (
           <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 leading-relaxed">
             <p className="font-medium text-gray-700 mb-1">
               {isZh ? "评估摘要" : "Assessment Summary"}
@@ -190,30 +204,35 @@ export function ReportContent({
         <h2 className="text-sm font-semibold text-gray-700 mb-4">
           {isZh ? "语言技能概况" : "Language Skills Profile"}
         </h2>
-        <div className="space-y-3">
-          {(Object.entries(rec.perStrandLevel) as [Strand, number][]).map(
-            ([strand, level]) => (
+        <div className="space-y-4">
+          {(Object.entries(rec.perStrandLevel) as [Strand, number][])
+            .filter(([strand]) => !assessedStrands || assessedStrands.includes(strand))
+            .map(([strand, level]) => (
               <div key={strand}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-700 font-medium">
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className="text-base text-gray-800 font-medium">
                     {strandLabels[strand] ?? strand}
                   </span>
-                  <span className="text-sm font-bold text-indigo-700">
+                  <span className="text-base font-bold text-blue-700">
                     {isZh ? `第 ${level} 级` : `Level ${level}`}
                   </span>
                 </div>
                 <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-indigo-500 rounded-full transition-all"
-                    style={{ width: `${(level / 5) * 100}%` }}
+                    className="h-full bg-blue-600 rounded-full transition-all"
+                    style={{ width: `${(level / 6) * 100}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {levelDescriptors[level] ?? `Level ${level}`}
+                <p className="text-[11px] uppercase tracking-wide text-gray-400 mt-1">
+                  {isZh ? levelDescriptors[level] ?? `Level ${level}` : levelBandLabel(level)}
                 </p>
+                {!isZh && (
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {candoDescription(strand, level)}
+                  </p>
+                )}
               </div>
-            )
-          )}
+            ))}
         </div>
       </section>
 

@@ -171,13 +171,25 @@ export async function POST(req: Request) {
     .from(items)
     .where(and(eq(items.strand, strand), eq(items.status, "live")));
 
-  const filtered = candidates.filter(
-    (item) =>
-      constraints.levels.includes(item.level as Level) &&
-      !alreadyShown.includes(item.id)
+  const unseen = candidates.filter((item) => !alreadyShown.includes(item.id));
+
+  // Prefer an unseen item at one of the target levels, least-shown first.
+  const onTarget = unseen
+    .filter((item) => constraints.levels.includes(item.level as Level))
+    .sort((a, b) => a.nAttempts - b.nAttempts);
+
+  // Never dead-end: if the exact levels are exhausted (thin item bank), fall
+  // back to the nearest available level so the strand can still finish.
+  const target = constraints.levels[0] ?? 3;
+  const fallback = [...unseen].sort(
+    (a, b) =>
+      Math.abs(a.level - target) - Math.abs(b.level - target) ||
+      a.nAttempts - b.nAttempts
   );
 
-  if (filtered.length === 0) {
+  const picked = onTarget[0] ?? fallback[0];
+
+  if (!picked) {
     return NextResponse.json(
       {
         error: `No live items available for ${strand} at levels [${constraints.levels.join(",")}]`,
@@ -185,8 +197,6 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-
-  const picked = filtered.sort((a, b) => a.nAttempts - b.nAttempts)[0]!;
 
   const clientParsed = ClientItemSchema.safeParse({
     id: picked.id,
