@@ -1,86 +1,60 @@
 /**
  * Standalone PDF generation for the placement report.
  *
- * This is intentionally decoupled from the website's DOM/print styles: the
- * document is authored here as an explicit component tree with a fixed A4
- * layout, controlled margins, and deterministic pagination. Rendered to a
- * true vector PDF via @react-pdf/renderer — no headless browser, no
- * window.print(), nothing gets clipped by the live layout.
+ * Decoupled from the website's DOM/print styles: the document is authored here
+ * as an explicit component tree with a fixed A4 layout and deterministic
+ * pagination, rendered to a true vector PDF via @react-pdf/renderer.
  *
- * Fonts: uses the PDF-standard families (Times-Roman for headings to give a
- * lightly-serif feel, Helvetica for body) so there are no font files to ship.
+ * Type: lightly-serif headings (PT Serif, bundled) over a clean sans body, to
+ * match the app's light, neutral design direction.
  */
+import path from "path";
 import {
   Document,
   Page,
   Text,
   View,
   StyleSheet,
+  Font,
   renderToBuffer,
 } from "@react-pdf/renderer";
 import type { Recommendation, Flag, Strand } from "@/engine/types";
+import {
+  STRAND_LABELS,
+  levelBandLabel,
+  candoDescription,
+} from "@/lib/level-descriptions";
 
 // ---------------------------------------------------------------------------
-// Palette (blue accent on neutral, per the project's design direction)
+// Fonts — bundled PT Serif for headings (Helvetica remains available for body)
 // ---------------------------------------------------------------------------
-const COLORS = {
-  ink: "#1A1916",
+const FONT_DIR = path.join(process.cwd(), "src/server/fonts");
+Font.register({
+  family: "PT Serif",
+  fonts: [
+    { src: path.join(FONT_DIR, "PTSerif-Regular.ttf") },
+    { src: path.join(FONT_DIR, "PTSerif-Bold.ttf"), fontWeight: "bold" },
+    { src: path.join(FONT_DIR, "PTSerif-Italic.ttf"), fontStyle: "italic" },
+  ],
+});
+const SERIF = "PT Serif";
+const SANS = "Helvetica";
+
+// ---------------------------------------------------------------------------
+// Palette — blue accent on warm neutral, per the design direction
+// ---------------------------------------------------------------------------
+const C = {
+  ink: "#22201B",
   muted: "#6B6759",
   dim: "#9A9686",
-  accent: "#2563EB", // blue
+  accent: "#2563EB",
   accentDeep: "#1E40AF",
-  hair: "#E4E1D8",
-  barTrack: "#ECEAE2",
+  hair: "#E6E2D8",
+  barTrack: "#ECEAE1",
   panel: "#FAF9F5",
   flagBg: "#FCF6E8",
   flagBorder: "#E6D3A3",
-  flagInk: "#8A6D2C",
-};
-
-// ---------------------------------------------------------------------------
-// Static copy (mirrors the on-screen report)
-// ---------------------------------------------------------------------------
-const STRAND_LABELS: Record<Strand, string> = {
-  reading: "Reading",
-  listening: "Listening",
-  grammar: "Grammar / Language Structures",
-  writing: "Writing",
-};
-
-const LEVEL_DESCRIPTORS: Record<number, string> = {
-  1: "Beginning (STEP 1–2) — Communicates using isolated words and simple phrases",
-  2: "Developing (STEP 2–3) — Produces simple sentences with support",
-  3: "Expanding (STEP 3–4) — Communicates in simple and some complex sentences",
-  4: "Consolidating (STEP 4–5) — Uses varied sentence structures with increasing accuracy",
-  5: "Bridging (STEP 5–6) — Approaches grade-level language proficiency",
-  6: "Mainstream-ready (STEP 6) — Grade-level proficiency; no ESL support required",
-};
-
-const FLAG_LABELS: Record<string, { label: string; note: string }> = {
-  "uneven-profile": {
-    label: "Uneven Language Profile",
-    note: "Scores vary significantly across strands. Human review recommended to understand skill gaps.",
-  },
-  "stage-3-ambiguous": {
-    label: "Borderline Placement",
-    note: "Results place the student near a boundary between levels. Specialist review is advised.",
-  },
-  rushed: {
-    label: "Short Response Times",
-    note: "Several responses were submitted very quickly. Consider whether this student was able to engage fully.",
-  },
-  "rapid-clicks": {
-    label: "Rapid Answer Selection",
-    note: "Multiple-choice responses were selected unusually fast. Results may not be reliable.",
-  },
-  "writing-blank": {
-    label: "Writing Not Completed",
-    note: "The writing task was not submitted or was submitted without content. Writing level could not be assessed.",
-  },
-  "audio-skipped": {
-    label: "Listening Task Not Completed",
-    note: "Audio items were skipped or answered immediately. Listening level may be underestimated.",
-  },
+  flagInk: "#7A5F22",
 };
 
 const MAX_LEVEL = 6;
@@ -88,90 +62,99 @@ const MAX_LEVEL = 6;
 // ---------------------------------------------------------------------------
 // Styles
 // ---------------------------------------------------------------------------
-const s = StyleSheet.create({
+const st = StyleSheet.create({
   page: {
-    paddingTop: 46,
-    paddingBottom: 54,
-    paddingHorizontal: 52,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    color: COLORS.ink,
-    lineHeight: 1.45,
+    paddingTop: 48,
+    paddingBottom: 56,
+    paddingHorizontal: 54,
+    fontFamily: SANS,
+    fontSize: 11,
+    color: C.ink,
+    lineHeight: 1.5,
   },
-  // Header
+
   eyebrow: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 8,
-    letterSpacing: 1.6,
-    color: COLORS.dim,
+    fontFamily: SANS,
+    fontSize: 8.5,
+    letterSpacing: 1.5,
+    color: C.dim,
     textTransform: "uppercase",
-    marginBottom: 4,
+    marginBottom: 6,
   },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-  studentName: { fontFamily: "Times-Bold", fontSize: 22, lineHeight: 1.1, color: COLORS.ink },
-  assessedDate: { fontSize: 9, color: COLORS.muted, marginTop: 5 },
-  placeLabel: { fontSize: 8, color: COLORS.dim, textAlign: "right", marginBottom: 2 },
-  course: { fontFamily: "Times-Bold", fontSize: 26, lineHeight: 1.1, color: COLORS.accentDeep, textAlign: "right" },
-  stream: { fontSize: 9, color: COLORS.muted, textAlign: "right", textTransform: "capitalize" },
-  rule: { borderBottomWidth: 1.5, borderBottomColor: COLORS.ink, marginTop: 14, marginBottom: 18 },
+  studentName: { fontFamily: SERIF, fontWeight: "bold", fontSize: 24, lineHeight: 1.1, color: C.ink },
+  assessedDate: { fontSize: 10, color: C.muted, marginTop: 6 },
+  placeLabel: { fontSize: 8.5, color: C.dim, textAlign: "right", marginBottom: 3 },
+  course: { fontFamily: SERIF, fontWeight: "bold", fontSize: 28, lineHeight: 1.05, color: C.accentDeep, textAlign: "right" },
+  stream: { fontSize: 10, color: C.muted, textAlign: "right" },
+  rule: { borderBottomWidth: 1.5, borderBottomColor: C.ink, marginTop: 16, marginBottom: 20 },
 
-  // Sections
-  sectionTitle: {
-    fontFamily: "Times-Bold",
-    fontSize: 12,
-    color: COLORS.ink,
-    marginBottom: 8,
-  },
-  panel: {
-    backgroundColor: COLORS.panel,
-    borderWidth: 1,
-    borderColor: COLORS.hair,
-    borderRadius: 5,
-    padding: 12,
-  },
-  summaryItem: { flexDirection: "row", marginBottom: 2 },
-  bullet: { width: 10, color: COLORS.accent },
-  summaryText: { flex: 1, fontSize: 9.5, color: COLORS.muted },
+  intro: { fontSize: 10.5, color: C.muted, marginBottom: 22, lineHeight: 1.5 },
 
-  block: { marginBottom: 20 },
+  sectionTitle: { fontFamily: SERIF, fontWeight: "bold", fontSize: 14, color: C.ink, marginBottom: 14 },
+
+  block: { marginBottom: 22 },
 
   // Strand rows
-  strandRow: { marginBottom: 12 },
-  strandTop: { flexDirection: "row", justifyContent: "space-between", marginBottom: 3 },
-  strandName: { fontFamily: "Helvetica-Bold", fontSize: 10.5, color: COLORS.ink },
-  strandLevel: { fontFamily: "Helvetica-Bold", fontSize: 10.5, color: COLORS.accentDeep },
-  barTrack: { height: 6, backgroundColor: COLORS.barTrack, borderRadius: 3 },
-  barFill: { height: 6, backgroundColor: COLORS.accent, borderRadius: 3 },
-  descriptor: { fontSize: 8, color: COLORS.dim, marginTop: 3 },
+  strandRow: { marginBottom: 15 },
+  strandTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 },
+  strandName: { fontFamily: SANS, fontSize: 12.5, color: C.ink },
+  strandLevel: { fontFamily: SERIF, fontWeight: "bold", fontSize: 13, color: C.accentDeep },
+  barTrack: { height: 7, backgroundColor: C.barTrack, borderRadius: 4 },
+  barFill: { height: 7, backgroundColor: C.accent, borderRadius: 4 },
+  band: { fontSize: 9, color: C.dim, marginTop: 5, textTransform: "uppercase", letterSpacing: 0.5 },
+  cando: { fontSize: 10.5, color: C.muted, marginTop: 2, lineHeight: 1.45 },
 
   // Flags
-  flagPanel: {
-    backgroundColor: COLORS.flagBg,
-    borderWidth: 1,
-    borderColor: COLORS.flagBorder,
-    borderRadius: 5,
-    padding: 12,
-  },
-  flagTitle: { fontFamily: "Helvetica-Bold", fontSize: 10.5, color: COLORS.flagInk, marginBottom: 8 },
-  flagItem: { marginBottom: 7 },
-  flagLabel: { fontFamily: "Helvetica-Bold", fontSize: 9.5, color: COLORS.flagInk },
-  flagNote: { fontSize: 8.5, color: COLORS.flagInk },
+  flagPanel: { backgroundColor: C.flagBg, borderWidth: 1, borderColor: C.flagBorder, borderRadius: 6, padding: 14 },
+  flagTitle: { fontFamily: SANS, fontSize: 11.5, color: C.flagInk, marginBottom: 9 },
+  flagItem: { marginBottom: 8 },
+  flagLabel: { fontFamily: SANS, fontSize: 10.5, color: C.flagInk },
+  flagNote: { fontSize: 9.5, color: C.flagInk, marginTop: 1 },
 
-  // Footer
+  footnote: { fontSize: 9, color: C.dim, marginTop: 4, fontStyle: "italic" },
+
   footer: {
     position: "absolute",
-    bottom: 24,
-    left: 52,
-    right: 52,
+    bottom: 26,
+    left: 54,
+    right: 54,
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 0.75,
-    borderTopColor: COLORS.hair,
-    paddingTop: 6,
-    fontSize: 7.5,
-    color: COLORS.dim,
+    borderTopColor: C.hair,
+    paddingTop: 7,
+    fontSize: 8,
+    color: C.dim,
   },
 });
+
+const FLAG_LABELS: Record<string, { label: string; note: string }> = {
+  "uneven-profile": {
+    label: "Uneven language profile",
+    note: "Levels vary significantly across skills. A teacher review is recommended to understand the student's specific strengths and gaps.",
+  },
+  "stage-3-ambiguous": {
+    label: "Borderline placement",
+    note: "The results place the student close to a boundary between two levels. A specialist review is advised.",
+  },
+  rushed: {
+    label: "Short response times",
+    note: "Several answers were submitted very quickly. Consider whether the student engaged fully with the questions.",
+  },
+  "rapid-clicks": {
+    label: "Rapid answer selection",
+    note: "Multiple-choice answers were selected unusually fast, so these results may not be reliable.",
+  },
+  "writing-blank": {
+    label: "Writing not completed",
+    note: "The writing task was not submitted, so the writing level could not be assessed.",
+  },
+  "audio-skipped": {
+    label: "Listening not completed",
+    note: "Listening items were skipped, so the listening level may be underestimated.",
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Document
@@ -180,92 +163,79 @@ export interface ReportPdfData {
   rec: Recommendation;
   studentName: string;
   assessmentDate: Date;
+  /** Which strands were actually assessed. Others are omitted from the report. */
+  assessedStrands?: Strand[];
 }
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" });
 }
 
-/** Replace glyphs the standard PDF fonts lack (e.g. → arrows) with supported ones. */
-function sanitize(text: string): string {
-  return text.replace(/→+/g, " — ").replace(/\s{2,}/g, " ").trim();
-}
-
-function ReportDocument({ rec, studentName, assessmentDate }: ReportPdfData) {
+function ReportDocument({ rec, studentName, assessmentDate, assessedStrands }: ReportPdfData) {
   const warnFlags = rec.flags.filter(
     (f: Flag) => f.severity === "warn" || f.severity === "review"
   );
-  const reasoning = (rec.reasoning ?? []).slice(0, 6);
-  const strands = Object.entries(rec.perStrandLevel) as [Strand, number][];
+
+  const allStrands = Object.entries(rec.perStrandLevel) as [Strand, number][];
+  const strands = assessedStrands
+    ? allStrands.filter(([s]) => assessedStrands.includes(s))
+    : allStrands;
 
   return (
-    <Document
-      title={`Placement Report — ${studentName}`}
-      author="CLT Assessment Platform"
-    >
-      <Page size="A4" style={s.page}>
+    <Document title={`Placement Report — ${studentName}`} author="CLT Assessment Platform">
+      <Page size="A4" style={st.page}>
         {/* Header */}
         <View>
-          <Text style={s.eyebrow}>ESL Placement Assessment · Confidential</Text>
-          <View style={s.headerRow}>
+          <Text style={st.eyebrow}>ESL Placement Assessment · Confidential</Text>
+          <View style={st.headerRow}>
             <View>
-              <Text style={s.studentName}>{studentName}</Text>
-              <Text style={s.assessedDate}>Assessed: {formatDate(assessmentDate)}</Text>
+              <Text style={st.studentName}>{studentName}</Text>
+              <Text style={st.assessedDate}>Assessed {formatDate(assessmentDate)}</Text>
             </View>
             <View>
-              <Text style={s.placeLabel}>Recommended Placement</Text>
-              <Text style={s.course}>{rec.course}</Text>
-              <Text style={s.stream}>{rec.stream}</Text>
+              <Text style={st.placeLabel}>Recommended Placement</Text>
+              <Text style={st.course}>{rec.course}</Text>
+              <Text style={st.stream}>{rec.stream} stream</Text>
             </View>
           </View>
         </View>
-        <View style={s.rule} />
+        <View style={st.rule} />
 
-        {/* Assessment summary */}
-        {reasoning.length > 0 && (
-          <View style={s.block}>
-            <Text style={s.sectionTitle}>Assessment Summary</Text>
-            <View style={s.panel}>
-              {reasoning.map((line, i) => (
-                <View style={s.summaryItem} key={i}>
-                  <Text style={s.bullet}>•</Text>
-                  <Text style={s.summaryText}>{sanitize(line)}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
+        <Text style={st.intro}>
+          This report summarizes the student&rsquo;s estimated English level in each skill
+          area assessed. Levels run from 1 (Beginning) to 6 (Mainstream-ready) and are
+          estimates from an adaptive placement test.
+        </Text>
 
-        {/* Language skills profile */}
-        <View style={s.block}>
-          <Text style={s.sectionTitle}>Language Skills Profile</Text>
+        {/* Skills profile — plain per-strand levels + descriptions */}
+        <View style={st.block}>
+          <Text style={st.sectionTitle}>Language Skills</Text>
           {strands.map(([strand, level]) => (
-            <View style={s.strandRow} key={strand} wrap={false}>
-              <View style={s.strandTop}>
-                <Text style={s.strandName}>{STRAND_LABELS[strand] ?? strand}</Text>
-                <Text style={s.strandLevel}>Level {level}</Text>
+            <View style={st.strandRow} key={strand} wrap={false}>
+              <View style={st.strandTop}>
+                <Text style={st.strandName}>{STRAND_LABELS[strand] ?? strand}</Text>
+                <Text style={st.strandLevel}>Level {level}</Text>
               </View>
-              <View style={s.barTrack}>
-                <View style={[s.barFill, { width: `${(level / MAX_LEVEL) * 100}%` }]} />
+              <View style={st.barTrack}>
+                <View style={[st.barFill, { width: `${(level / MAX_LEVEL) * 100}%` }]} />
               </View>
-              <Text style={s.descriptor}>
-                {LEVEL_DESCRIPTORS[level] ?? `Level ${level}`}
-              </Text>
+              <Text style={st.band}>{levelBandLabel(level)}</Text>
+              <Text style={st.cando}>{candoDescription(strand, level)}</Text>
             </View>
           ))}
         </View>
 
         {/* Flags */}
         {warnFlags.length > 0 && (
-          <View style={s.block} wrap={false}>
-            <View style={s.flagPanel}>
-              <Text style={s.flagTitle}>Specialist Review Recommended</Text>
+          <View style={st.block} wrap={false}>
+            <View style={st.flagPanel}>
+              <Text style={st.flagTitle}>Teacher review recommended</Text>
               {warnFlags.map((f, i) => {
                 const info = FLAG_LABELS[f.code];
                 return (
-                  <View style={s.flagItem} key={i}>
-                    <Text style={s.flagLabel}>{info?.label ?? f.code}</Text>
-                    <Text style={s.flagNote}>{info?.note ?? f.detail}</Text>
+                  <View style={st.flagItem} key={i}>
+                    <Text style={st.flagLabel}>{info?.label ?? f.code}</Text>
+                    <Text style={st.flagNote}>{info?.note ?? f.detail}</Text>
                   </View>
                 );
               })}
@@ -274,7 +244,7 @@ function ReportDocument({ rec, studentName, assessmentDate }: ReportPdfData) {
         )}
 
         {/* Footer (fixed on every page) */}
-        <View style={s.footer} fixed>
+        <View style={st.footer} fixed>
           <Text>CLT Assessment Platform · Engine {rec.engineVersion}</Text>
           <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
         </View>

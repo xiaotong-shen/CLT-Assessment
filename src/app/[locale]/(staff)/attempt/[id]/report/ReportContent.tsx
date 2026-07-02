@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { TranslateToggle } from "./TranslateToggle";
 import type { Recommendation, Flag, Strand } from "@/engine/types";
+import { levelBandLabel, candoDescription } from "@/lib/level-descriptions";
 
 // ---------------------------------------------------------------------------
 // Static label maps (client-side)
@@ -94,6 +95,8 @@ interface Props {
    * button. Lets the stateless demo reuse this report as-is.
    */
   demo?: boolean;
+  /** Restrict the skills profile to these strands (others omitted). */
+  assessedStrands?: Strand[];
 }
 
 // ---------------------------------------------------------------------------
@@ -108,6 +111,7 @@ export function ReportContent({
   essayGrading,
   locale,
   demo = false,
+  assessedStrands,
 }: Props) {
   const [translation, setTranslation] = useState<TranslationResult | null>(null);
   const isZh = !!translation;
@@ -180,8 +184,8 @@ export function ReportContent({
           </div>
         </div>
 
-        {/* Reasoning */}
-        {displayReasoning.length > 0 && (
+        {/* Reasoning (engine trace) — hidden in demo/plain-terms mode */}
+        {!demo && displayReasoning.length > 0 && (
           <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 leading-relaxed">
             <p className="font-medium text-gray-700 mb-1">
               {isZh ? "评估摘要" : "Assessment Summary"}
@@ -200,30 +204,35 @@ export function ReportContent({
         <h2 className="text-sm font-semibold text-gray-700 mb-4">
           {isZh ? "语言技能概况" : "Language Skills Profile"}
         </h2>
-        <div className="space-y-3">
-          {(Object.entries(rec.perStrandLevel) as [Strand, number][]).map(
-            ([strand, level]) => (
+        <div className="space-y-4">
+          {(Object.entries(rec.perStrandLevel) as [Strand, number][])
+            .filter(([strand]) => !assessedStrands || assessedStrands.includes(strand))
+            .map(([strand, level]) => (
               <div key={strand}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-700 font-medium">
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className="text-base text-gray-800 font-medium">
                     {strandLabels[strand] ?? strand}
                   </span>
-                  <span className="text-sm font-bold text-indigo-700">
+                  <span className="text-base font-bold text-blue-700">
                     {isZh ? `第 ${level} 级` : `Level ${level}`}
                   </span>
                 </div>
                 <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-indigo-500 rounded-full transition-all"
-                    style={{ width: `${(level / 5) * 100}%` }}
+                    className="h-full bg-blue-600 rounded-full transition-all"
+                    style={{ width: `${(level / 6) * 100}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {levelDescriptors[level] ?? `Level ${level}`}
+                <p className="text-[11px] uppercase tracking-wide text-gray-400 mt-1">
+                  {isZh ? levelDescriptors[level] ?? `Level ${level}` : levelBandLabel(level)}
                 </p>
+                {!isZh && (
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {candoDescription(strand, level)}
+                  </p>
+                )}
               </div>
-            )
-          )}
+            ))}
         </div>
       </section>
 

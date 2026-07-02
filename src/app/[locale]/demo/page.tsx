@@ -43,10 +43,10 @@ const C = {
   text: "#1A1916",
   textMuted: "#6B6759",
   textDim: "#8E8A7A",
-  accent: "#C15F3C",
-  accentHover: "#A04E2E",
-  accentSoft: "#F4E8DD",
-  accentBorder: "#E0C6B3",
+  accent: "#2563EB",
+  accentHover: "#1D4ED8",
+  accentSoft: "#E9EFFC",
+  accentBorder: "#C6D8F7",
   successSoft: "#E5EDDF",
   successText: "#5A7546",
   successBorder: "#C7D5BC",
@@ -93,20 +93,21 @@ type StrandFilter = Strand | "all";
 function makeInitialState(filter: StrandFilter): AttemptState {
   const baseProgress = initialStrandProgress();
 
-  let strandProgress = baseProgress;
-  if (filter !== "all") {
-    const otherDefaults: StrandProgress = {
-      stage: "done",
-      trackLevels: [],
-      estimatedLevel: 3,
-    };
-    strandProgress = {
-      reading: filter === "reading" ? baseProgress.reading : otherDefaults,
-      listening: filter === "listening" ? baseProgress.listening : otherDefaults,
-      grammar: filter === "grammar" ? baseProgress.grammar : otherDefaults,
-      writing: filter === "writing" ? baseProgress.writing : otherDefaults,
-    };
-  }
+  // Skipped strands are marked done with a neutral level so they neither
+  // block routing nor drag the placement. Listening is always skipped in the
+  // demo — it has no live items yet (audio pipeline pending).
+  const skipped: StrandProgress = {
+    stage: "done",
+    trackLevels: [],
+    estimatedLevel: 3,
+  };
+
+  const strandProgress: Record<Strand, StrandProgress> = {
+    reading: filter === "all" || filter === "reading" ? baseProgress.reading : skipped,
+    listening: skipped,
+    grammar: filter === "all" || filter === "grammar" ? baseProgress.grammar : skipped,
+    writing: filter === "all" || filter === "writing" ? baseProgress.writing : skipped,
+  };
 
   return {
     attemptId: "demo",
@@ -143,7 +144,7 @@ function StrandPicker({ onPick, onSkip }: { onPick: (f: StrandFilter) => void; o
     {
       key: "all",
       title: "Full assessment",
-      desc: "All four strands: reading, listening, grammar, and writing.",
+      desc: "Reading, grammar, and writing. (Listening is pending audio content.)",
       primary: true,
     },
     {
@@ -160,12 +161,6 @@ function StrandPicker({ onPick, onSkip }: { onPick: (f: StrandFilter) => void; o
       key: "writing",
       title: "Writing only",
       desc: "Free-response prompts (auto-advance in demo mode).",
-    },
-    {
-      key: "listening",
-      title: "Listening only",
-      desc: "Audio comprehension items.",
-      badge: "Under construction",
     },
   ];
 
@@ -366,6 +361,15 @@ export default function DemoPage() {
 
   const [downloading, setDownloading] = useState(false);
 
+  // Strands the student actually answered (listening is never shown — no
+  // content yet). Falls back to the core three if responses are unavailable.
+  function assessedStrands(): Strand[] {
+    const seen = new Set((state?.responses ?? []).map((r) => r.strand));
+    const order: Strand[] = ["reading", "grammar", "writing"];
+    const list = order.filter((s) => seen.has(s));
+    return list.length > 0 ? list : order;
+  }
+
   async function downloadPdf() {
     if (!recommendation || downloading) return;
     setDownloading(true);
@@ -377,6 +381,7 @@ export default function DemoPage() {
           recommendation,
           studentName: "Demo Student",
           assessmentDate: new Date().toISOString(),
+          assessedStrands: assessedStrands(),
         }),
       });
       if (!res.ok) throw new Error("PDF generation failed");
@@ -500,6 +505,7 @@ export default function DemoPage() {
             assessmentDate={new Date()}
             locale={locale}
             demo
+            assessedStrands={assessedStrands()}
           />
 
           <footer className="text-center text-xs pb-8 print:pb-4" style={{ color: C.textDim }}>
