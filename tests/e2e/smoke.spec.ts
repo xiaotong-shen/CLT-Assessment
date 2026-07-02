@@ -20,9 +20,13 @@ test("intake page loads in zh-Hans", async ({ page }) => {
 
 test("staff login page loads", async ({ page }) => {
   await page.goto("/en/login");
-  await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible();
-  await expect(page.getByLabel(/email/i)).toBeVisible();
-  await expect(page.getByLabel(/password/i)).toBeVisible();
+  // Anchor the name so it matches only the credentials submit button, not the
+  // dev-only "Sign in as Dev Admin" bypass button.
+  await expect(page.getByRole("button", { name: /^sign in$/i })).toBeVisible();
+  // Target inputs by type — the labels aren't associated (no htmlFor), so
+  // getByLabel doesn't resolve them.
+  await expect(page.locator('input[type="email"]')).toBeVisible();
+  await expect(page.locator('input[type="password"]')).toBeVisible();
 });
 
 test("queue page redirects unauthenticated users to login", async ({ page }) => {
