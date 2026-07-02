@@ -13,8 +13,9 @@ test("intake page loads in English", async ({ page }) => {
 
 test("intake page loads in zh-Hans", async ({ page }) => {
   await page.goto("/zh-Hans/intake");
-  // The submit button is visible (text differs by locale)
-  await expect(page.getByRole("button")).toBeVisible();
+  // The submit button is visible (text differs by locale, so target it by
+  // type rather than name — and to avoid matching dev-only overlay buttons).
+  await expect(page.locator('button[type="submit"]')).toBeVisible();
 });
 
 test("staff login page loads", async ({ page }) => {
