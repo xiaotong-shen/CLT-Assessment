@@ -36,10 +36,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit-tests
     env:
-      # Minimal env for Next.js to build without a real DB
+      # Minimal env for Next.js to build without a real DB.
+      # Names must match src/lib/env.ts (AUTH_SECRET, AUTH_URL — not NEXTAUTH_*).
       DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
-      NEXTAUTH_SECRET: ci-test-secret-placeholder
-      NEXTAUTH_URL: http://localhost:3000
+      AUTH_SECRET: ci-test-secret-placeholder
+      AUTH_URL: http://localhost:3000
       ANTHROPIC_API_KEY: placeholder
     steps:
       - uses: actions/checkout@v4
