@@ -1,17 +1,21 @@
 /**
- * Stateless demo endpoint — no DB writes.
+ * Stateless demo endpoint — no DB at all.
  *
  * POST /api/demo/next
  * Body: { state, response?: { itemId, raw, timeMs, stage, strand, level } }
  *   `raw` is the raw user response (string for mc-single, string[] for mc-multi/cloze, etc.)
- *   The server fetches the item from DB and scores correctness against the full payload.
+ *   Items come from the static seed bank (src/server/item-bank.ts); the server
+ *   scores correctness against the full item payload.
  * Returns: { item, stage, strand, state, explain, lastCorrect? } | { done, recommendation, explain, lastCorrect? }
  */
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { and, eq } from "drizzle-orm";
-import { db } from "@/server/db";
-import { items } from "../../../../../db/schema";
+import { getItemById, getLiveItems } from "@/server/item-bank";
+import {
+  gradeEssay,
+  isGraderConfigured,
+  type GradingResult,
+} from "@/server/writing-grader";
 import {
   decide,
   advanceStrand,
@@ -95,13 +99,11 @@ export async function POST(req: Request) {
   let state: AttemptState = parsed.data.state;
   const incoming = parsed.data.response;
   let lastCorrect: boolean | undefined;
+  let writingGrading: GradingResult | null = null;
 
-  // Apply the response — score on the server using the full DB payload.
+  // Apply the response — score on the server using the full item payload.
   if (incoming) {
-    const [row] = await db
-      .select()
-      .from(items)
-      .where(eq(items.id, incoming.itemId));
+    const row = getItemById(incoming.itemId);
 
     if (!row) {
       return NextResponse.json(
@@ -132,7 +134,35 @@ export async function POST(req: Request) {
     );
 
     let updatedProgress = { ...state.strandProgress };
-    if (strandResponses.length >= 4) {
+    if (incoming.strand === "writing") {
+      // Writing is a single prompt: the student writes one essay and the strand
+      // is complete. The level comes from grading the essay with the Claude
+      // writing-grader. If no API key is configured, fall back to a provisional
+      // mid-level placeholder (level 3) so the demo still completes.
+      const essayText =
+        (incoming.raw as { text?: string } | null)?.text?.trim() ?? "";
+      const promptTextEn =
+        (row.payload as Record<string, unknown>)["promptTextEn"] as
+          | string
+          | undefined ?? "";
+      let writingLevel: Level = 3;
+      if (isGraderConfigured() && essayText.length > 0) {
+        try {
+          writingGrading = await gradeEssay({
+            promptTextEn,
+            essayText,
+            itemLevel: incoming.level,
+          });
+          writingLevel = writingGrading.scoredLevel as Level;
+        } catch (err) {
+          console.error("Writing grading failed; using placeholder:", err);
+        }
+      }
+      updatedProgress = {
+        ...updatedProgress,
+        writing: { stage: "done", trackLevels: [], estimatedLevel: writingLevel },
+      };
+    } else if (strandResponses.length >= 4) {
       const newProgress = advanceStrand(
         incoming.strand as Strand,
         state.strandProgress[incoming.strand as Strand],
@@ -160,34 +190,30 @@ export async function POST(req: Request) {
       recommendation: decision.recommendation,
       explain,
       lastCorrect,
+      writingGrading,
     });
   }
 
   const { constraints, stage, strand } = decision;
   const alreadyShown = state.responses.map((r) => r.itemId);
 
-  const candidates = await db
-    .select()
-    .from(items)
-    .where(and(eq(items.strand, strand), eq(items.status, "live")));
-
+  const candidates = getLiveItems(strand);
   const unseen = candidates.filter((item) => !alreadyShown.includes(item.id));
-
-  // Prefer an unseen item at one of the target levels, least-shown first.
-  const onTarget = unseen
-    .filter((item) => constraints.levels.includes(item.level as Level))
-    .sort((a, b) => a.nAttempts - b.nAttempts);
-
-  // Never dead-end: if the exact levels are exhausted (thin item bank), fall
-  // back to the nearest available level so the strand can still finish.
   const target = constraints.levels[0] ?? 3;
-  const fallback = [...unseen].sort(
-    (a, b) =>
-      Math.abs(a.level - target) - Math.abs(b.level - target) ||
-      a.nAttempts - b.nAttempts
-  );
+  const nearest = (a: { level: number }, b: { level: number }) =>
+    Math.abs(a.level - target) - Math.abs(b.level - target);
 
-  const picked = onTarget[0] ?? fallback[0];
+  // Prefer an unseen item at one of the target levels…
+  const onTarget = unseen.filter((item) =>
+    constraints.levels.includes(item.level as Level)
+  );
+  // …then the nearest unseen level (thin banks won't dead-end)…
+  const fallback = [...unseen].sort(nearest);
+  // …and as a last resort (bank fully exhausted, e.g. writing's few prompts),
+  // reuse the nearest already-seen item rather than erroring.
+  const lastResort = [...candidates].sort(nearest);
+
+  const picked = onTarget[0] ?? fallback[0] ?? lastResort[0];
 
   if (!picked) {
     return NextResponse.json(
@@ -221,5 +247,6 @@ export async function POST(req: Request) {
     state,
     explain,
     lastCorrect,
+    writingGrading,
   });
 }

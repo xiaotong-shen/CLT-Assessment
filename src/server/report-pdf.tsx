@@ -105,6 +105,31 @@ const st = StyleSheet.create({
   band: { fontSize: 9, color: C.dim, marginTop: 5, textTransform: "uppercase", letterSpacing: 0.5 },
   cando: { fontSize: 10.5, color: C.muted, marginTop: 2, lineHeight: 1.45 },
 
+  // Writing detail (AI grading)
+  traitGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
+  traitCard: {
+    width: "48%",
+    borderWidth: 1,
+    borderColor: C.hair,
+    borderRadius: 5,
+    padding: 9,
+    marginBottom: 8,
+  },
+  traitHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 },
+  traitName: { fontFamily: SANS, fontSize: 9.5, color: C.ink },
+  traitScore: { fontFamily: SERIF, fontWeight: "bold", fontSize: 10, color: C.accentDeep },
+  traitRationale: { fontSize: 8.5, color: C.muted, lineHeight: 1.4 },
+  overall: {
+    marginTop: 4,
+    backgroundColor: C.panel,
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 9.5,
+    color: C.muted,
+    lineHeight: 1.45,
+  },
+  overallLabel: { fontFamily: SANS, color: C.ink },
+
   // Flags
   flagPanel: { backgroundColor: C.flagBg, borderWidth: 1, borderColor: C.flagBorder, borderRadius: 6, padding: 14 },
   flagTitle: { fontFamily: SANS, fontSize: 11.5, color: C.flagInk, marginBottom: 9 },
@@ -159,19 +184,37 @@ const FLAG_LABELS: Record<string, { label: string; note: string }> = {
 // ---------------------------------------------------------------------------
 // Document
 // ---------------------------------------------------------------------------
+export interface EssayGrading {
+  scoredTraits: { trait: string; score: number; rationale: string }[];
+  scoredLevel: number;
+  modelRationale: string;
+}
+
 export interface ReportPdfData {
   rec: Recommendation;
   studentName: string;
   assessmentDate: Date;
   /** Which strands were actually assessed. Others are omitted from the report. */
   assessedStrands?: Strand[];
+  /** AI writing-grader result (from the essay), if available. */
+  essayGrading?: EssayGrading;
 }
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" });
 }
 
-function ReportDocument({ rec, studentName, assessmentDate, assessedStrands }: ReportPdfData) {
+function prettyTrait(name: string): string {
+  return name.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase()).trim();
+}
+
+function ReportDocument({
+  rec,
+  studentName,
+  assessmentDate,
+  assessedStrands,
+  essayGrading,
+}: ReportPdfData) {
   const warnFlags = rec.flags.filter(
     (f: Flag) => f.severity === "warn" || f.severity === "review"
   );
@@ -224,6 +267,32 @@ function ReportDocument({ rec, studentName, assessmentDate, assessedStrands }: R
             </View>
           ))}
         </View>
+
+        {/* Writing detail — AI grading against the rubric (docs/writing-rubric.md) */}
+        {essayGrading && (
+          <View style={st.block}>
+            <Text style={st.sectionTitle}>Writing Detail</Text>
+            <View style={st.traitGrid}>
+              {essayGrading.scoredTraits.map((t, i) => (
+                <View style={st.traitCard} key={i} wrap={false}>
+                  <View style={st.traitHead}>
+                    <Text style={st.traitName}>{prettyTrait(t.trait)}</Text>
+                    <Text style={st.traitScore}>{t.score}/5</Text>
+                  </View>
+                  <Text style={st.traitRationale}>{t.rationale}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={st.overall}>
+              <Text>
+                <Text style={st.overallLabel}>
+                  Overall (Level {essayGrading.scoredLevel}):{" "}
+                </Text>
+                {essayGrading.modelRationale}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Flags */}
         {warnFlags.length > 0 && (

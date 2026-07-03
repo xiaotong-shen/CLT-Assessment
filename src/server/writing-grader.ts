@@ -1,10 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import { db } from "./db";
-import { rubrics } from "../../db/schema";
-import { eq } from "drizzle-orm";
-
-const client = new Anthropic();
+import { WRITING_RUBRIC, type RubricTrait } from "./writing-rubric";
 
 // ----------------------------------------------------------------------------
 // Types
@@ -30,42 +26,53 @@ export interface GradingResult {
 
 const GRADER_MODEL = "claude-haiku-4-5";
 
+/**
+ * Whether the Anthropic API is configured. When false, callers should skip
+ * grading and fall back to a placeholder — no key, no crash.
+ *
+ * Set ANTHROPIC_API_KEY in .env.local (see .env.example) to enable grading.
+ */
+export function isGraderConfigured(): boolean {
+  const key = process.env["ANTHROPIC_API_KEY"];
+  return !!key && key !== "placeholder" && key.length > 20;
+}
+
 // ----------------------------------------------------------------------------
 // Prompt builder
 // ----------------------------------------------------------------------------
 
-function buildSystemPrompt(
-  traits: { name: string; label: string; weight: number }[],
-  rubricVersion: string
-): string {
+function buildSystemPrompt(traits: RubricTrait[]): string {
   const traitList = traits
-    .map((t, i) => `${i + 1}. **${t.label}** (field: "${t.name}")`)
+    .map(
+      (t, i) =>
+        `${i + 1}. **${t.label}** (field: "${t.name}", weight ${t.weight}) — ${t.description}`
+    )
+    .join("\n");
+
+  const scaleList = Object.entries(WRITING_RUBRIC.scale)
+    .map(([n, d]) => `  ${n} – ${d}`)
     .join("\n");
 
   return `You are an expert ESL/ELD writing assessor for a Canadian secondary school.
-You evaluate student essays according to the Ontario ESL/ELD curriculum framework (Levels 1–5, aligned to STEP Steps 1–6).
+You evaluate student essays according to the Ontario ESL/ELD curriculum framework (proficiency Levels 1–5).
 
-Rubric version: ${rubricVersion}
+Rubric version: ${WRITING_RUBRIC.version}
 
 Score each essay on the following traits on a scale of 1–5:
 ${traitList}
 
-Scoring rubric per level:
-  1 – Beginning: Very limited control; errors severely impede communication
-  2 – Developing: Basic control; frequent errors but partial meaning is conveyed
-  3 – Expanding: Adequate control; some errors; meaning is generally clear
-  4 – Consolidating: Good control; occasional errors; communicates effectively
-  5 – Bridging: Strong control; rare/minor errors; confident and fluent communication
+Scoring scale per trait:
+${scaleList}
 
 Guidelines:
-- Be fair but rigorous. A Level-1 student writing simple sentences well should score 3+ on Task Fulfillment.
-- Consider that students may be writing in English as a second/additional language.
-- The overall level is the weighted mean of trait scores rounded to the nearest integer.
+- Be fair but rigorous. Students are writing in English as a second/additional language — assess what they CAN do, not only their errors.
+- A beginner who writes simple sentences well should still score in the middle range on Task Fulfillment if the task is met.
+- The overall level is the weighted mean of the trait scores, rounded to the nearest integer.
 
 Respond ONLY with a JSON object matching this exact shape — no markdown fences, no extra keys:
 {
   "traits": [
-    { "trait": "<traitName>", "score": <1-5>, "rationale": "<1–2 sentences>" }
+    { "trait": "<field name>", "score": <1-5>, "rationale": "<1–2 sentences>" }
   ],
   "overallLevel": <1-5>,
   "rationale": "<2–3 sentence overall assessment>"
@@ -79,25 +86,19 @@ Respond ONLY with a JSON object matching this exact shape — no markdown fences
 export async function gradeEssay(params: {
   promptTextEn: string;
   essayText: string;
-  rubricId: string;
   itemLevel: number;
 }): Promise<GradingResult> {
-  // Fetch rubric from DB
-  const [rubric] = await db
-    .select()
-    .from(rubrics)
-    .where(eq(rubrics.id, params.rubricId))
-    .limit(1);
-
-  if (!rubric) {
-    throw new Error(`Rubric not found: ${params.rubricId}`);
+  if (!isGraderConfigured()) {
+    throw new Error(
+      "Writing grader is not configured: set ANTHROPIC_API_KEY in the environment."
+    );
   }
 
-  const traits = rubric.traits as { name: string; label: string; weight: number }[];
-  const systemPrompt = buildSystemPrompt(traits, rubric.version);
+  const client = new Anthropic();
+  const systemPrompt = buildSystemPrompt(WRITING_RUBRIC.traits);
 
   const userMessage =
-    `Writing prompt (Level ${params.itemLevel}):\n${params.promptTextEn}\n\n` +
+    `Writing prompt (target Level ${params.itemLevel}):\n${params.promptTextEn}\n\n` +
     `Student essay:\n---\n${params.essayText.trim()}\n---\n\n` +
     `Score this essay according to the rubric. Respond ONLY with the JSON object.`;
 
@@ -138,6 +139,6 @@ export async function gradeEssay(params: {
     scoredLevel: Math.round(parsed.overallLevel),
     modelRationale: parsed.rationale,
     model: GRADER_MODEL,
-    rubricVersion: rubric.version,
+    rubricVersion: WRITING_RUBRIC.version,
   };
 }

@@ -1,5 +1,22 @@
 [
   {
+    "id": "write-placement-001",
+    "strand": "writing",
+    "level": 3,
+    "subskill": "placement-open-response",
+    "format": "essay",
+    "status": "live",
+    "culturalContextFlag": false,
+    "estimatedTimeSec": 600,
+    "payload": {
+      "promptTextEn": "Think about a person who is important to you — a family member, a friend, or a teacher. Write about this person. Describe who they are and what they are like, and explain why they are important to you. If you can, give an example of something they have done. Write as much as you can — simple sentences are fine, and you may write more if you are able.",
+      "promptTextZh": "想一个对你很重要的人——家人、朋友或老师。写一写这个人。描述他们是谁、是什么样的人，并解释为什么他们对你很重要。如果可以，请举一个他们做过的事情的例子。尽量多写——简单的句子也可以，如果你能写更多也很好。",
+      "minWords": 30,
+      "maxWords": 400,
+      "rubricId": "rubric-v1"
+    }
+  },
+  {
     "id": "write-L1-family-001",
     "strand": "writing",
     "level": 1,
