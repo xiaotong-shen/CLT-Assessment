@@ -20,6 +20,19 @@ const BodySchema = z.object({
   assessedStrands: z
     .array(z.enum(["reading", "listening", "grammar", "writing"]))
     .optional(),
+  essayGrading: z
+    .object({
+      scoredTraits: z.array(
+        z.object({
+          trait: z.string(),
+          score: z.number(),
+          rationale: z.string(),
+        })
+      ),
+      scoredLevel: z.number(),
+      modelRationale: z.string(),
+    })
+    .nullish(),
 });
 
 export async function POST(req: Request) {
@@ -32,13 +45,15 @@ export async function POST(req: Request) {
     });
   }
 
-  const { recommendation, studentName, assessmentDate, assessedStrands } = parsed.data;
+  const { recommendation, studentName, assessmentDate, assessedStrands, essayGrading } =
+    parsed.data;
 
   const pdf = await renderReportPdf({
     rec: recommendation,
     studentName: studentName?.trim() || "Student",
     assessmentDate: assessmentDate ? new Date(assessmentDate) : new Date(),
     assessedStrands,
+    essayGrading: essayGrading ?? undefined,
   });
 
   const safeName = (studentName || "student").replace(/[^a-z0-9]+/gi, "-").toLowerCase();

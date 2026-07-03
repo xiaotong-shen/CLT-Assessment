@@ -68,6 +68,12 @@ type DemoExplain = {
   output: Record<string, unknown>;
 };
 
+type WritingGrading = {
+  scoredTraits: { trait: string; score: number; rationale: string }[];
+  scoredLevel: number;
+  modelRationale: string;
+};
+
 type DemoNext =
   | {
       item: ClientItem;
@@ -76,12 +82,14 @@ type DemoNext =
       state: AttemptState;
       explain: DemoExplain;
       lastCorrect?: boolean;
+      writingGrading?: WritingGrading | null;
     }
   | {
       done: true;
       recommendation: Recommendation;
       explain: DemoExplain;
       lastCorrect?: boolean;
+      writingGrading?: WritingGrading | null;
     };
 
 type StrandFilter = Strand | "all";
@@ -102,11 +110,19 @@ function makeInitialState(filter: StrandFilter): AttemptState {
     estimatedLevel: 3,
   };
 
+  // Writing is a single open-response prompt in the demo (mid-level, level 3),
+  // graded holistically rather than run through the multi-item adaptive flow.
+  const writingActive: StrandProgress = {
+    stage: "route",
+    trackLevels: [3],
+    estimatedLevel: null,
+  };
+
   const strandProgress: Record<Strand, StrandProgress> = {
     reading: filter === "all" || filter === "reading" ? baseProgress.reading : skipped,
     listening: skipped,
     grammar: filter === "all" || filter === "grammar" ? baseProgress.grammar : skipped,
-    writing: filter === "all" || filter === "writing" ? baseProgress.writing : skipped,
+    writing: filter === "all" || filter === "writing" ? writingActive : skipped,
   };
 
   return {
@@ -281,6 +297,7 @@ export default function DemoPage() {
   const [elapsed, setElapsed] = useState(0);
   const [lastExplain, setLastExplain] = useState<DemoExplain | null>(null);
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
+  const [writingGrading, setWritingGrading] = useState<WritingGrading | null>(null);
   const itemStartMs = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -330,6 +347,8 @@ export default function DemoPage() {
         setLastCorrect(
           typeof data.lastCorrect === "boolean" ? data.lastCorrect : null
         );
+        // Grading only arrives on the writing response — keep it once seen.
+        if (data.writingGrading) setWritingGrading(data.writingGrading);
         if ("done" in data) {
           setRecommendation(data.recommendation);
         } else {
@@ -356,6 +375,7 @@ export default function DemoPage() {
     setRecommendation(null);
     setLastExplain(null);
     setLastCorrect(null);
+    setWritingGrading(null);
     fetchNext(initial);
   }
 
@@ -382,6 +402,7 @@ export default function DemoPage() {
           studentName: "Demo Student",
           assessmentDate: new Date().toISOString(),
           assessedStrands: assessedStrands(),
+          essayGrading: writingGrading,
         }),
       });
       if (!res.ok) throw new Error("PDF generation failed");
@@ -408,6 +429,7 @@ export default function DemoPage() {
     setRecommendation(null);
     setLastExplain(null);
     setLastCorrect(null);
+    setWritingGrading(null);
     setError(null);
   }
 
@@ -506,6 +528,7 @@ export default function DemoPage() {
             locale={locale}
             demo
             assessedStrands={assessedStrands()}
+            essayGrading={writingGrading ?? undefined}
           />
 
           <footer className="text-center text-xs pb-8 print:pb-4" style={{ color: C.textDim }}>

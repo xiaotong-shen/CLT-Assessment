@@ -304,14 +304,12 @@ export async function recordResponse(
     const essayText = (response as { text?: string })?.text ?? "";
     const payload = item.payload as {
       promptTextEn: string;
-      rubricId: string;
     };
 
     try {
       const grading = await gradeEssay({
         promptTextEn: payload.promptTextEn,
         essayText,
-        rubricId: payload.rubricId,
         itemLevel: item.level,
       });
 
